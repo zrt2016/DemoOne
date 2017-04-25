@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">FragmentDemoOne</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="daipeiye">未配液核对</string>
+	<string name="yijiaodui">已校对</string>
+	<string name="kaishizhixing">开始</string>
+	<string name="zantingzhixing">暂停</string>
+	<string name="zhixingwanbi">完毕</string>
+</resources>
