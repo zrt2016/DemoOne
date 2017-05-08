@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 
 public abstract class FragmentBasic extends Fragment{
 	
+	public View contentView;
+	
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -17,8 +19,10 @@ public abstract class FragmentBasic extends Fragment{
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
-		return super.onCreateView(inflater, container, savedInstanceState);
+		if (null == contentView){
+			contentView = inflater.inflate(R.layout.fragment_yizhu_state_child, container, false);
+		}
+		return contentView;
 	}
 	
 }
