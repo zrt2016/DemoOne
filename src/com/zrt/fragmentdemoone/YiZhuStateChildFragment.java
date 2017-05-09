@@ -12,6 +12,11 @@ public class YiZhuStateChildFragment extends FragmentBasic{
 		YiZhuStateChildFragment childFragment = new YiZhuStateChildFragment(state);
 		return childFragment;
 	}
+
+	@Override
+	public String configTabChild() {
+		return state;
+	}
 	
 	
 	

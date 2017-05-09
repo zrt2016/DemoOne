@@ -2,13 +2,15 @@ package com.zrt.fragmentdemoone;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.RadioGroup;
 
-public class MainActivity extends Activity {
+public class MainActivity extends FragmentActivity {
 	
 	// 待配液、已校对、开始执行、暂停执行、执行完毕
 	public static final String state_daipeiye = "待配液";
@@ -47,6 +49,7 @@ public class MainActivity extends Activity {
 	
 	private void initListener() {
 		mainRG.setOnCheckedChangeListener(onRadioGroupListener);
+		mainRG.check(R.id.main_rb_yijiaodui);
 	}
 	
 	private RadioGroup.OnCheckedChangeListener onRadioGroupListener = new RadioGroup.OnCheckedChangeListener() {
@@ -76,8 +79,24 @@ public class MainActivity extends Activity {
 	};
 
 	protected void switchFragment(YiZhuStateChildFragment yiZhuStateChildFragment) {
-		// TODO Auto-generated method stub
-		
+		if (currentFragment == yiZhuStateChildFragment){
+			return;
+		}
+		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+		if (null != currentFragment){
+			if (currentFragment.isAdded() && !currentFragment.isHidden()){
+				transaction.hide(currentFragment);
+			}
+		}
+		if (!yiZhuStateChildFragment.isAdded()){
+			transaction.add(R.id.main_content, yiZhuStateChildFragment);
+			transaction.show(yiZhuStateChildFragment);
+		}else {
+			transaction.show(yiZhuStateChildFragment);
+		}
+		transaction.commit();
+		getSupportFragmentManager().executePendingTransactions();
+		currentFragment = yiZhuStateChildFragment;
 	}
 	
 	
