@@ -25,6 +25,13 @@ public abstract class YiZhuStatusBasic {
 	 */
 	public abstract void setYiZhuType(String yizhu_type, boolean isUpdate);
 	
+	/**
+	 * 2017-05-15
+	 * @param yizhu_type 医嘱类型
+	 * @param isUpdate 是否刷新医嘱
+	 */
+	public abstract void setYiZhuType(String yizhu_type, boolean isUpdate);
+	
 	public <T> List<T> getData(){
 		
 		
