@@ -18,4 +18,13 @@ public class YiZhuCompletedStatus extends YiZhuStatusBasic{
 		
 	}
 
+	@Override
+	public void setYiZhuType(String yizhu_type, boolean isUpdate) {
+		this.yizhu_type = yizhu_type;
+		// TODO  是否刷新医嘱界面
+		if (isUpdate){
+			
+		}
+	}
+
 }
