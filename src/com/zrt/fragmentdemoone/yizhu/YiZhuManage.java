@@ -1,5 +1,7 @@
 package com.zrt.fragmentdemoone.yizhu;
 
+import com.zrt.fragmentdemoone.GlobalInfoApplication;
+
 public class YiZhuManage {
 	// 待配液、已校对、开始执行、暂停执行、执行完毕
 	public static final String status_daipeiye = "待配液";
@@ -11,7 +13,7 @@ public class YiZhuManage {
 	
 	public YiZhuStatusBasic statusBasic;
 	
-	public YiZhuManage(String status, String yizhu_type) {
+	public YiZhuManage(String status, String yizhu_type, GlobalInfoApplication current_application) {
 		switch (status) {
 			case status_daipeiye:
 				statusBasic = new YiZhuWeiPeiYeStatus(yizhu_type);
@@ -33,7 +35,7 @@ public class YiZhuManage {
 				break;
 		}
 		
-		
+		statusBasic.setCurrent_application(current_application);
 		
 	}
 	
