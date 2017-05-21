@@ -1,5 +1,10 @@
 package com.zrt.fragmentdemoone.yizhu;
 
+import java.util.List;
+
+import android.database.Cursor;
+import android.util.Log;
+
 /**
  * 已校对模块
  * 存在状态为待配液的非输液医嘱
@@ -55,7 +60,7 @@ public class YiZhuWeiZhiXingStatus extends YiZhuStatusBasic{
 	@Override
 	public <T> void onExecute(T object) {
 		// TODO Auto-generated method stub
-		
+		Log.i(">>>>", "##"+object.toString()+"="+this.getClass().getName());
 	}
 
 	@Override
@@ -65,6 +70,45 @@ public class YiZhuWeiZhiXingStatus extends YiZhuStatusBasic{
 		if (isUpdate){
 			
 		}
+	}
+
+	@Override
+	public void getYiZhuStateRecord(YiZhuInfo yiZhuInfo) {
+		// TODO Auto-generated method stub
+		StringBuilder peiye_lishi_new = new StringBuilder();
+		StringBuilder jiaodui_lishi_new = new StringBuilder();
+		
+		StringBuilder sb_sqlite = new StringBuilder();
+		sb_sqlite.append("SELECT * FROM yizhu_zhixing_history_lishi WHERE zhixing_zuhao = '")
+		  .append(yiZhuInfo.getZuhao())
+		  .append("' AND zhixing_state in ('已配液','已校对') AND case when type = '临时' then zhixing_time >= strftime('%Y-%m-%d %H:%M:%S','now', '-")
+		  .append(current_application.linshi_yizhu_xianshi)
+		  .append(" Hour', 'localtime') else yizhu_time = strftime('%Y-%m-%d', 'now', 'localtime') end ORDER BY real_time DESC");
+		Cursor lishiCursor = db.rawQuery(sb_sqlite.toString(), new String[] {});
+		if (lishiCursor.getCount() > 0) {
+			int temp_peiye_number = 0;
+			int temp_jiaodui_number = 0;
+			while (lishiCursor.moveToNext()) {
+				if (lishiCursor.getString(lishiCursor.getColumnIndex("zhixing_state")).equals("已配液")&& temp_peiye_number == 0) {
+					peiye_lishi_new.append(lishiCursor.getString(lishiCursor.getColumnIndex("zhixing_hushi_name")))
+								   .append(" ")
+								   .append(lishiCursor.getString(lishiCursor.getColumnIndex("zhixing_time")));
+					temp_peiye_number++;
+					continue;
+				} 
+				if (lishiCursor.getString(lishiCursor.getColumnIndex("zhixing_state")).equals("已校对")&& temp_jiaodui_number == 0) {
+					jiaodui_lishi_new.append(lishiCursor.getString(lishiCursor.getColumnIndex("zhixing_hushi_name")))
+									 .append(" ")
+									 .append(lishiCursor.getString(lishiCursor.getColumnIndex("zhixing_time")));;
+					temp_jiaodui_number++;
+					continue;
+				}
+			}
+		}
+		lishiCursor.close();
+		lishiCursor = null;
+		yiZhuInfo.setPeiye_history(peiye_lishi_new.toString());
+		yiZhuInfo.setJiaodui_history(jiaodui_lishi_new.toString());
 	}
 
 }

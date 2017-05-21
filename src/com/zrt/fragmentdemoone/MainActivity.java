@@ -1,5 +1,7 @@
 package com.zrt.fragmentdemoone;
 
+import com.zrt.fragmentdemoone.yizhu.YiZhuManage;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -56,23 +58,29 @@ public class MainActivity extends FragmentActivity {
 		
 		@Override
 		public void onCheckedChanged(RadioGroup group, int checkedId) {
+			YiZhuManage manage = null;
 			// TODO Auto-generated method stub
 			switchFragment(childs.get(checkedId));
 			switch (checkedId) {
 				case R.id.main_rb_daipeiye:
 					MyLogger.i("##待配液");
+					manage = new YiZhuManage(state_daipeiye, "全部", (GlobalInfoApplication) MainActivity.this.getApplication());
 					break;
 				case R.id.main_rb_yijiaodui:
 					MyLogger.i("##已校对");
+					manage = new YiZhuManage(state_weizhixing, "全部", (GlobalInfoApplication) MainActivity.this.getApplication());
 					break;
 				case R.id.main_rb_kaishizhixing:
 					MyLogger.i("##开始执行");
+					manage = new YiZhuManage(state_kaishi, "全部", (GlobalInfoApplication) MainActivity.this.getApplication());
 					break;
 				case R.id.main_rb_zantingzhixing:
 					MyLogger.i("##暂停执行");
+					manage = new YiZhuManage(state_zanting, "全部", (GlobalInfoApplication) MainActivity.this.getApplication());
 					break;
 				case R.id.main_rb_zhixingwanbi:
 					MyLogger.i("##执行完毕");
+					manage = new YiZhuManage(state_wancheng, "全部", (GlobalInfoApplication) MainActivity.this.getApplication());
 					break;
 			}
 		}

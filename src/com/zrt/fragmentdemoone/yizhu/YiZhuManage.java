@@ -36,7 +36,8 @@ public class YiZhuManage {
 		}
 		
 		statusBasic.setCurrent_application(current_application);
-		
+		//获取医嘱数据
+//		statusBasic.getData(statusBasic.getSQLiteType(yizhu_type));
 	}
 	
 	
