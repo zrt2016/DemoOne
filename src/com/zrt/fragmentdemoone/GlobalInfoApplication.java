@@ -8,7 +8,8 @@ public class GlobalInfoApplication extends Application{
 	
 	public long linshi_yizhu_xianshi = 32L;
 	
-	public String yizhu_peiye_hedui_types = "输液";
+	 public String yizhu_peiye_hedui_type = "输液";
+	public String yizhu_peiye_hedui_types = "'输液'";
 	
 	@Override
 	public void onCreate() {

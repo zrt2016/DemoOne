@@ -7,75 +7,75 @@ public class YiZhuInfo {
 	
 //	modify_time
 	
-	public int yizhu_id;
+	private int yizhu_id;
 
-	public String zhuyuan_id = "";
+	private String zhuyuan_id = "";
 	/**医嘱类型：长期或者临时*/
-	public String yizhu_type = "";
+	private String yizhu_type = "";
 	/** 医嘱内容 */
-	public String content = "";
+	private String content = "";
 	/** 医嘱下达时间 */
-	public String start_time = "";
+	private String start_time = "";
 	/** 医嘱停止时间 */
-	public String stop_time = "";
+	private String stop_time = "";
 	/** 医嘱用法 */
-	public String yongfa = "";
+	private String yongfa = "";
 	/** 医嘱用量 */
-	public String yongliang = "";
+	private String yongliang = "";
 	/** 医嘱用量单位 */
-	public String shiyong_danwei = "";
+	private String shiyong_danwei = "";
 	/** 医嘱使用频率 */
-	public String pinlv = "";
+	private String pinlv = "";
 	/** 医嘱组号 */
-	public String zuhao = "";
+	private String zuhao = "";
 	/** 医嘱执行状态 */
-	public String zhixing_state = "";
+	private String zhixing_state = "";
 	/** 医嘱每日需要完成次数 */
-	public int meiri_cishu;
+	private int meiri_cishu;
 	/** 医嘱每日已完成次数 */
-	public int wancheng_cishu;
+	private int wancheng_cishu;
 	/**  */
-	public String operate_time = "";
+	private String operate_time = "";
 	/** 医嘱类型 */
-	public String yongfa_type = "";
+	private String yongfa_type = "";
 	/** 医嘱状态：开始执行或者停止执行或暂停执行 */
-	public String state = "";
+	private String state = "";
 	/**  */
-	public String beizhu = "";
+	private String beizhu = "";
 	/**  */
-	public String kuatian = "";
+	private String kuatian = "";
 	/**  */
-	public String xiangying_state = "";
+	private String xiangying_state = "";
 	/**  */
-	public String zhuangtai = "";
+	private String zhuangtai = "";
 	/**  */
-	public String yizhu_time = "";
+	private String yizhu_time = "";
 	/**  */
-	public String chushi_state = "";
+	private String chushi_state = "";
 	/**  */
-	public String shouci_yongyao = "";
+	private String shouci_yongyao = "";
 	/**  */
-	public String yongyao_time = "";
+	private String yongyao_time = "";
 	/**  */
-	public String yichang_lock = "";
+	private String yichang_lock = "";
 	/**  */
-	public String unwork_time = "";
+	private String unwork_time = "";
 	/**  */
-	public List<ContentInfo> yizhu_content_info;
+	private List<ContentInfo> yizhu_content_info;
 	/**  */
-	public List<Map<String, String>> yizhu_hedui_history;
+	private List<OperationHistoryInfo> yizhu_hedui_history;
 	/**  */
-	public List<Map<String, String>> yizhu_qita_history;
+	private List<OperationHistoryInfo> yizhu_qita_history;
 	/** 医嘱配液历史记录 */
-	public String peiye_history = ""; //peiye_lishi_new
+	private String peiye_history = ""; //peiye_lishi_new
 	/** 医嘱校对历史记录 */
-	public String jiaodui_history = "";//jiaodui_lishi_new
+	private String jiaodui_history = "";//jiaodui_lishi_new
 	/** 医嘱开始执行历史记录 */
-	public String kaishi_history = "";//kaishi_lishi_new
+	private String kaishi_history = "";//kaishi_lishi_new
 	/** 医嘱执行完毕历史记录 */
-	public String wanbi_history = "";//wanbi_lishi_new
+	private String wanbi_history = "";//wanbi_lishi_new
 	/** 皮试医嘱执行完毕录入值 */
-	public String pishi_value = "";//pishi_value
+	private String pishi_value = "";//pishi_value
 	
 	public int getYizhu_id() {
 		return yizhu_id;
@@ -245,16 +245,16 @@ public class YiZhuInfo {
 	public void setYizhu_content_info(List<ContentInfo> yizhu_content_info) {
 		this.yizhu_content_info = yizhu_content_info;
 	}
-	public List<Map<String, String>> getYizhu_hedui_history() {
+	public List<OperationHistoryInfo> getYizhu_hedui_history() {
 		return yizhu_hedui_history;
 	}
-	public void setYizhu_hedui_history(List<Map<String, String>> yizhu_hedui_history) {
+	public void setYizhu_hedui_history(List<OperationHistoryInfo> yizhu_hedui_history) {
 		this.yizhu_hedui_history = yizhu_hedui_history;
 	}
-	public List<Map<String, String>> getYizhu_qita_history() {
+	public List<OperationHistoryInfo> getYizhu_qita_history() {
 		return yizhu_qita_history;
 	}
-	public void setYizhu_qita_history(List<Map<String, String>> yizhu_qita_history) {
+	public void setYizhu_qita_history(List<OperationHistoryInfo> yizhu_qita_history) {
 		this.yizhu_qita_history = yizhu_qita_history;
 	}
 	public String getPeiye_history() {
@@ -288,10 +288,11 @@ public class YiZhuInfo {
 		this.pishi_value = pishi_value;
 	}
 	
-	public class ContentInfo{
-		public String content = "";
-		public String yongliang = "";
-		public String shiyong_danwei = "";
+	public class ContentInfo {
+		private String content = "";
+		private String yongliang = "";
+		private String shiyong_danwei = "";
+		
 		public String getContent() {
 			return content;
 		}
@@ -309,6 +310,53 @@ public class YiZhuInfo {
 		}
 		public void setShiyong_danwei(String shiyong_danwei) {
 			this.shiyong_danwei = shiyong_danwei;
+		}
+	}
+	
+	
+	public class OperationHistoryInfo {
+		private String zhixing_hushi_name = "";
+		private String zhixing_time = "";
+		private String hedui_cishu = "";
+		private String op_type = "";
+		private String dangqian_cishu = "";
+		private String beizhu = "";
+		
+		public String getZhixing_hushi_name() {
+			return zhixing_hushi_name;
+		}
+		public void setZhixing_hushi_name(String zhixing_hushi_name) {
+			this.zhixing_hushi_name = zhixing_hushi_name;
+		}
+		public String getZhixing_time() {
+			return zhixing_time;
+		}
+		public void setZhixing_time(String zhixing_time) {
+			this.zhixing_time = zhixing_time;
+		}
+		public String getHedui_cishu() {
+			return hedui_cishu;
+		}
+		public void setHedui_cishu(String hedui_cishu) {
+			this.hedui_cishu = hedui_cishu;
+		}
+		public String getOp_type() {
+			return op_type;
+		}
+		public void setOp_type(String op_type) {
+			this.op_type = op_type;
+		}
+		public String getDangqian_cishu() {
+			return dangqian_cishu;
+		}
+		public void setDangqian_cishu(String dangqian_cishu) {
+			this.dangqian_cishu = dangqian_cishu;
+		}
+		public String getBeizhu() {
+			return beizhu;
+		}
+		public void setBeizhu(String beizhu) {
+			this.beizhu = beizhu;
 		}
 	}
 	

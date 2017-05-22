@@ -179,13 +179,10 @@ public class YiZhuCompletedStatus extends YiZhuStatusBasic{
 						continue;
 					} 
 				}
-				duociLishiCursor.close();
-				duociLishiCursor = null;
+				releaseCursor(duociLishiCursor);
 			}
 		}
-		lishiCursor.close();
-		lishiCursor = null;
-	
+		releaseCursor(lishiCursor);
 	}
 
 }

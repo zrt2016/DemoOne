@@ -94,9 +94,7 @@ public class YiZhuPauseStatus extends YiZhuStatusBasic{
 				continue;
 			}
 		}
-		lishiCursor.close();
-		lishiCursor = null;
-		
+		releaseCursor(lishiCursor);
 		yiZhuInfo.setPeiye_history(peiye_lishi_new.toString());
 		yiZhuInfo.setJiaodui_history(jiaodui_lishi_new.toString());
 		yiZhuInfo.setKaishi_history(kaishi_lishi_new.toString());

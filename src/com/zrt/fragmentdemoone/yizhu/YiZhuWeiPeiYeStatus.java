@@ -92,8 +92,7 @@ public class YiZhuWeiPeiYeStatus extends YiZhuStatusBasic{
 				}
 			}
 		}
-		lishiCursor.close();
-		lishiCursor = null;
+		releaseCursor(lishiCursor);
 		yiZhuInfo.setPeiye_history(peiye_lishi_new.toString());
 		yiZhuInfo.setJiaodui_history(jiaodui_lishi_new.toString());
 		
