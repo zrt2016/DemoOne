@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.zrt.fragmentdemoone.GlobalInfoApplication;
-import com.zrt.fragmentdemoone.yizhu.YiZhuInfo.ContentInfo;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 
 public abstract class YiZhuStatusBasic {
 	public String yizhu_type = "全部";

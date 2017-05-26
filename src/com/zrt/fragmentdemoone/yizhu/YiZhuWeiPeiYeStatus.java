@@ -99,21 +99,5 @@ public class YiZhuWeiPeiYeStatus extends YiZhuStatusBasic{
 		
 	}
 	
-	/**
-	 * 开始执行
-	 * @param yiZhuInfo 
-	 * @param insert_type
-	 */
-	private void yiZhuBeginExecute(YiZhuInfo yiZhuInfo, int insert_type) {
-		// TODO Auto-generated method stub
-//		String history_id = UUID.randomUUID().toString();
-//		String str2 = "UPDATE yizhu_info SET zhixing_state = '开始执行',state = 'update',operate_time=datetime('now', 'localtime'),kuatian = '否' WHERE zuhao = '" + yiZhuInfo.getZuhao() + "' ;";
-//        db.execSQL(str2);
-//        String str3 = "INSERT INTO yizhu_zhixing_history (history_id,zhuyuan_id,zhixing_state,zhixing_type,zhixing_hushi_id,zhixing_hushi_name,zhixing_zuhao,zhixing_time,type,real_time,op_type,hedui_cishu,dangqian_cishu,yizhu_time,yizhu_shuxing,other_info,changqi_yizhu_id) VALUES ('"+history_id+"','" + current_application.current_patient_zhuyuan_id + "','" + op_type + "', '" + op_type + "','" + current_application.current_user_number + "','" + current_application.current_user_name + "','" + str1 + "',datetime('now', 'localtime'),'" + yizhu_type + "', datetime('now', 'localtime'),'"+op_type+"','"+hedui_cishu+"','"+dangqian_cishu+"',date(strftime('%Y-%m-%d', 'now', 'localtime')),'0','"+other_info+"','"+insert_type+"');";
-//        db.execSQL(str3);
-//        String str4 = "INSERT INTO yizhu_zhixing_history_lishi (history_id,zhuyuan_id,zhixing_state,zhixing_type,zhixing_hushi_id,zhixing_hushi_name,zhixing_zuhao,zhixing_time,type,real_time,op_type,hedui_cishu,dangqian_cishu,yizhu_time,yizhu_shuxing,other_info,changqi_yizhu_id) VALUES ('"+history_id+"','" + current_application.current_patient_zhuyuan_id + "','" + op_type + "', '" + op_type + "','" + current_application.current_user_number + "','" + current_application.current_user_name + "','" + str1 + "',datetime('now', 'localtime'),'" + yizhu_type + "', datetime('now', 'localtime'),'"+op_type+"','"+hedui_cishu+"','"+dangqian_cishu+"',date(strftime('%Y-%m-%d', 'now', 'localtime')),'0','"+other_info+"','"+insert_type+"');";
-//        db.execSQL(str4);
-
-	}
 
 }

@@ -1,6 +1,7 @@
 package com.zrt.fragmentdemoone.yizhu;
 
 import java.util.List;
+import java.util.UUID;
 
 import android.database.Cursor;
 import android.util.Log;
@@ -61,6 +62,7 @@ public class YiZhuWeiZhiXingStatus extends YiZhuStatusBasic{
 	public <T> void onExecute(T object) {
 		// TODO Auto-generated method stub
 		Log.i(">>>>", "##"+object.toString()+"="+this.getClass().getName());
+		
 	}
 
 	@Override
@@ -108,6 +110,82 @@ public class YiZhuWeiZhiXingStatus extends YiZhuStatusBasic{
 		releaseCursor(lishiCursor);
 		yiZhuInfo.setPeiye_history(peiye_lishi_new.toString());
 		yiZhuInfo.setJiaodui_history(jiaodui_lishi_new.toString());
+	}
+	
+	/**
+	 * 开始执行
+	 * @param yiZhuInfo 
+	 * @param insert_type
+	 */
+	private void yiZhuBeginExecute(YiZhuInfo yiZhuInfo, int insert_type) {
+		// TODO Auto-generated method stub
+		String history_id = UUID.randomUUID().toString();
+		int dangqian_cishu = getDangqianWanchengCishu(yiZhuInfo.getWancheng_cishu(), yiZhuInfo.getMeiri_cishu(), "");
+		
+		int hedui_cishu = getCalcHeduiCishu(yiZhuInfo.getZuhao(), "开始执行", dangqian_cishu);
+		StringBuilder update_yizhu = new StringBuilder();
+		update_yizhu.append("UPDATE yizhu_info SET zhixing_state = '开始执行',state = 'update',operate_time=datetime('now', 'localtime'),kuatian = '否' WHERE zuhao = '")
+					.append(yiZhuInfo.getZuhao())
+					.append("' ");
+        db.execSQL(update_yizhu.toString());
+        StringBuilder insert_yizhu = new StringBuilder();
+        insert_yizhu.append("INSERT INTO yizhu_zhixing_history (history_id,zhuyuan_id,zhixing_state,zhixing_type,zhixing_hushi_id,zhixing_hushi_name,zhixing_zuhao,zhixing_time,type,real_time,op_type,hedui_cishu,dangqian_cishu,yizhu_time,yizhu_shuxing,other_info,changqi_yizhu_id) VALUES ('")
+        			.append(history_id).append("','")
+        			.append(current_application.current_patient_zhuyuan_id).append("','开始执行','开始执行','")
+        			.append("current_application.current_user_number").append("','")
+        			.append(current_application.current_user_name).append("','")
+        			.append(yiZhuInfo.getZuhao()).append("',datetime('now', 'localtime'),'开始执行','")
+        			.append(hedui_cishu).append("','")
+        			.append(dangqian_cishu).append("',date(strftime('%Y-%m-%d', 'now', 'localtime')),'0','")
+        			.append("+other_info+").append("','")//TODO 未完成
+        			.append(insert_type).append("' ");
+        			
+        			
+//        String str3 = ""+history_id+"','" + current_application.current_patient_zhuyuan_id + "','开始执行', '开始执行','" + current_application.current_user_number + "','" + current_application.current_user_name + "','"
+//        + str1 + "',datetime('now', 'localtime'),'" + yizhu_type + "', datetime('now', 'localtime'),'"
+//        		+op_type+"','"+hedui_cishu+"','"+dangqian_cishu+"',date(strftime('%Y-%m-%d', 'now', 'localtime')),'0','"+other_info+"','"+insert_type+"');";
+//        db.execSQL(str3);
+//        String str4 = "INSERT INTO yizhu_zhixing_history_lishi (history_id,zhuyuan_id,zhixing_state,zhixing_type,zhixing_hushi_id,zhixing_hushi_name,zhixing_zuhao,zhixing_time,type,real_time,op_type,hedui_cishu,dangqian_cishu,yizhu_time,yizhu_shuxing,other_info,changqi_yizhu_id) VALUES ('"+history_id+"','" + current_application.current_patient_zhuyuan_id + "','" + op_type + "', '" + op_type + "','" + current_application.current_user_number + "','" + current_application.current_user_name + "','" + str1 + "',datetime('now', 'localtime'),'" + yizhu_type + "', datetime('now', 'localtime'),'"+op_type+"','"+hedui_cishu+"','"+dangqian_cishu+"',date(strftime('%Y-%m-%d', 'now', 'localtime')),'0','"+other_info+"','"+insert_type+"');";
+//        db.execSQL(str4);
+
+	}
+	
+	/**
+	   * 计算当前核对次数
+	   * @param zuhao 组号
+	   * @param op_type 操作类型
+	   * @param unwork_time 历史医嘱未完成日期
+	   * @param dangqian_cishu 当前流程次数
+	   * @return
+	   */
+	private int getCalcHeduiCishu(String zuhao,String op_type,int dangqian_cishu){
+		int hedui_cishu = 0;
+		String str1 = "";
+//		if("".equals(StringHelper.notEmpty(unwork_time))){
+		str1 = "select zhixing_zuhao,hedui_cishu,op_type from yizhu_zhixing_history_lishi where zhixing_zuhao = '"+zuhao
+				+"' and zhixing_time >= strftime('%Y-%m-%d', 'now', 'localtime') and dangqian_cishu = '"+dangqian_cishu+"' and op_type = '"+op_type+"' group by zhixing_zuhao,hedui_cishu ";
+//		}else{
+//			  str1 = "select zhixing_zuhao,hedui_cishu,op_type from yizhu_zhixing_history_lishi where zhixing_zuhao = '"+zuhao
+//					  +"' and yizhu_time = '"+unwork_time+"' and dangqian_cishu = '"+dangqian_cishu+"' and op_type = '"+op_type+"' group by zhixing_zuhao,hedui_cishu ";
+//		}
+		Cursor localCursor1 = this.db.rawQuery(str1, new String[0]);
+		hedui_cishu = localCursor1.getCount();
+		localCursor1.close();
+		return hedui_cishu + 1;
+	}
+	
+	private int getDangqianWanchengCishu(int wancheng_cishu,int meiri_cishu,String tab_state) {
+		int dangqian_cishu = 0;
+//		if (!"".equals(StringHelper.notEmpty(wancheng_cishu)) & wancheng_cishu.matches("[0-9]+")) {
+		dangqian_cishu = wancheng_cishu;
+//		}
+		if(wancheng_cishu == meiri_cishu){
+			return dangqian_cishu;
+		}
+		if("执行完毕".equals(tab_state)){
+			return dangqian_cishu;
+		}
+		return dangqian_cishu + 1;
 	}
 
 }
