@@ -235,5 +235,50 @@ public abstract class YiZhuStatusBasic {
 		}
 	}
 	
+	/**
+	   * 计算当前核对次数
+	   * @param zuhao 组号
+	   * @param op_type 操作类型
+	   * @param unwork_time 历史医嘱未完成日期
+	   * @param dangqian_cishu 当前流程次数
+	   * @return
+	   */
+	public int getCalcHeduiCishu(String zuhao,String op_type,int dangqian_cishu){
+		int hedui_cishu = 0;
+		String str1 = "";
+//		if("".equals(StringHelper.notEmpty(unwork_time))){
+		str1 = "select zhixing_zuhao,hedui_cishu,op_type from yizhu_zhixing_history_lishi where zhixing_zuhao = '"+zuhao
+				+"' and zhixing_time >= strftime('%Y-%m-%d', 'now', 'localtime') and dangqian_cishu = '"+dangqian_cishu+"' and op_type = '"+op_type+"' group by zhixing_zuhao,hedui_cishu ";
+//		}else{
+//			  str1 = "select zhixing_zuhao,hedui_cishu,op_type from yizhu_zhixing_history_lishi where zhixing_zuhao = '"+zuhao
+//					  +"' and yizhu_time = '"+unwork_time+"' and dangqian_cishu = '"+dangqian_cishu+"' and op_type = '"+op_type+"' group by zhixing_zuhao,hedui_cishu ";
+//		}
+		Cursor localCursor1 = this.db.rawQuery(str1, new String[0]);
+		hedui_cishu = localCursor1.getCount();
+		localCursor1.close();
+		return hedui_cishu + 1;
+	}
+	
+	/**
+	 * 获取当前医嘱当前完成次数
+	 * @param wancheng_cishu
+	 * @param meiri_cishu
+	 * @param tab_state
+	 * @return
+	 */
+	public int getDangqianWanchengCishu(int wancheng_cishu,int meiri_cishu,String tab_state) {
+		int dangqian_cishu = 0;
+//		if (!"".equals(StringHelper.notEmpty(wancheng_cishu)) & wancheng_cishu.matches("[0-9]+")) {
+		dangqian_cishu = wancheng_cishu;
+//		}
+		if(wancheng_cishu == meiri_cishu){
+			return dangqian_cishu;
+		}
+		if("执行完毕".equals(tab_state)){
+			return dangqian_cishu;
+		}
+		return dangqian_cishu + 1;
+	}
+	
 
 }
