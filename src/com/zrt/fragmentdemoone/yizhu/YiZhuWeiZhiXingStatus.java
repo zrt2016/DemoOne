@@ -128,25 +128,25 @@ public class YiZhuWeiZhiXingStatus extends YiZhuStatusBasic{
 					.append(yiZhuInfo.getZuhao())
 					.append("' ");
         db.execSQL(update_yizhu.toString());
-//        StringBuilder insert_yizhu = new StringBuilder();
-//        insert_yizhu.append("INSERT INTO yizhu_zhixing_history (history_id,zhuyuan_id,zhixing_state,zhixing_type,zhixing_hushi_id,zhixing_hushi_name,zhixing_zuhao,zhixing_time,type,real_time,op_type,hedui_cishu,dangqian_cishu,yizhu_time,yizhu_shuxing,other_info,changqi_yizhu_id) VALUES ('")
-//        			.append(history_id).append("','")
-//        			.append(current_application.current_patient_zhuyuan_id).append("','开始执行','开始执行','")
-//        			.append("current_application.current_user_number").append("','")
-//        			.append(current_application.current_user_name).append("','")
-//        			.append(yiZhuInfo.getZuhao()).append("',datetime('now', 'localtime'),'")
-//        			.append(yiZhuInfo.getYizhu_type()).append("','")
-//        			.append(hedui_cishu).append("','")
-//        			.append(dangqian_cishu).append("',date(strftime('%Y-%m-%d', 'now', 'localtime')),'0','")
-//        			.append("+other_info+").append("','")//TODO 未完成
-//        			.append(insert_type).append("' ");
-//        db.execSQL(insert_yizhu.toString());
-//        StringBuilder insert_yizhu_history = new StringBuilder();
-//        insert_yizhu_history.append("INSERT INTO yizhu_zhixing_history_lishi (history_id,zhuyuan_id,zhixing_state,zhixing_type,zhixing_hushi_id,zhixing_hushi_name,zhixing_zuhao,zhixing_time,type,real_time,op_type,hedui_cishu,dangqian_cishu,yizhu_time,yizhu_shuxing,other_info,changqi_yizhu_id) VALUES ('")
-//        					.append(history_id).append("','")
-//        					.append(current_application.current_patient_zhuyuan_id).append("','开始执行','开始执行','")
-//                			.append("current_application.current_user_number").append("','")
-//                			.append(current_application.current_user_name).append("','");
+        StringBuilder insert_yizhu = new StringBuilder();
+        insert_yizhu.append("INSERT INTO yizhu_zhixing_history (history_id,zhuyuan_id,zhixing_state,zhixing_type,zhixing_hushi_id,zhixing_hushi_name,zhixing_zuhao,zhixing_time,type,real_time,op_type,hedui_cishu,dangqian_cishu,yizhu_time,yizhu_shuxing,other_info,changqi_yizhu_id) VALUES ('")
+        			.append(history_id).append("','")
+        			.append(current_application.current_patient_zhuyuan_id).append("','开始执行','开始执行','")
+        			.append("current_application.current_user_number").append("','")
+        			.append(current_application.current_user_name).append("','")
+        			.append(yiZhuInfo.getZuhao()).append("',datetime('now', 'localtime'),'")
+        			.append(yiZhuInfo.getYizhu_type()).append("','")
+        			.append(hedui_cishu).append("','")
+        			.append(dangqian_cishu).append("',date(strftime('%Y-%m-%d', 'now', 'localtime')),'0','")
+        			.append("+other_info+").append("','")//TODO 未完成
+        			.append(insert_type).append("' ");
+        db.execSQL(insert_yizhu.toString());
+        StringBuilder insert_yizhu_history = new StringBuilder();
+        insert_yizhu_history.append("INSERT INTO yizhu_zhixing_history_lishi (history_id,zhuyuan_id,zhixing_state,zhixing_type,zhixing_hushi_id,zhixing_hushi_name,zhixing_zuhao,zhixing_time,type,real_time,op_type,hedui_cishu,dangqian_cishu,yizhu_time,yizhu_shuxing,other_info,changqi_yizhu_id) VALUES ('")
+        					.append(history_id).append("','")
+        					.append(current_application.current_patient_zhuyuan_id).append("','开始执行','开始执行','")
+                			.append("current_application.current_user_number").append("','")
+                			.append(current_application.current_user_name).append("','");
                 			
 //        String str3 = "INSERT INTO yizhu_zhixing_history ("
 //        		+ "history_id,"
