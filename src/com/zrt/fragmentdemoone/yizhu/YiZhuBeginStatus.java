@@ -1,6 +1,7 @@
 package com.zrt.fragmentdemoone.yizhu;
 
 import java.util.List;
+import java.util.UUID;
 
 import android.database.Cursor;
 import android.util.Log;
@@ -11,6 +12,8 @@ import android.util.Log;
  *
  */
 public class YiZhuBeginStatus extends YiZhuStatusBasic{
+	public final String dangqian_zhixing_state = "执行完毕";
+	public final String zanting_zhixing = "暂停执行";
 
 	public YiZhuBeginStatus(String yizhu_type) {
 		// TODO Auto-generated constructor stub
@@ -100,7 +103,73 @@ public class YiZhuBeginStatus extends YiZhuStatusBasic{
 		yiZhuInfo.setKaishi_history(kaishi_lishi_new.toString());
 		
 	}
-
+	
+	/**
+	 * 执行完毕
+	 * @param yiZhuInfo
+	 * @param insert_type
+	 */
+	private void yiZhuCompleteExecute(YiZhuInfo yiZhuInfo, int insert_type) {
+		int dangqian_cishu = getDangqianWanchengCishu(yiZhuInfo.getWancheng_cishu(), yiZhuInfo.getMeiri_cishu(), "");
+		int hedui_cishu = getCalcHeduiCishu(yiZhuInfo.getZuhao(), dangqian_zhixing_state, dangqian_cishu);
+		String history_id = UUID.randomUUID().toString();
+		executeDB(getUpdateCompletedSQLite(yiZhuInfo));
+		executeDB(getInsertHistorySQLite(yiZhuInfo, history_id, history_id, dangqian_cishu, hedui_cishu, "", insert_type));
+		executeDB(getInsertHistoryLiShiSQLite(yiZhuInfo, history_id, history_id, dangqian_cishu, hedui_cishu, "", insert_type));
+	}
+	
+//	public String getUpdateCompletedSQLite(YiZhuInfo yiZhuInfo){
+//		StringBuilder updateSQLite = new StringBuilder();
+//		updateSQLite.append("UPDATE yizhu_info SET zhixing_state = case when chushi_state = '待配液' or chushi_state = '已校对' then chushi_state else '待配液' end ,state = 'update',wancheng_cishu = wancheng_cishu+1,operate_time=datetime('now', 'localtime') ,kuatian = '否' WHERE zuhao = '")
+//					.append(yiZhuInfo.getZuhao())
+//					.append("' ");
+//		return updateSQLite.toString();
+//	}
+	
+//	public String getInsertHistorySQLite(YiZhuInfo yiZhuInfo, String dangqian_zhixing_state,String history_id, int dangqian_cishu, int hedui_cishu, int insert_type){
+//		StringBuilder insertSQLite = new StringBuilder();
+//        insertSQLite.append("INSERT INTO yizhu_zhixing_history (history_id,zhuyuan_id,zhixing_state,zhixing_type,zhixing_hushi_id,zhixing_hushi_name,zhixing_zuhao,zhixing_time,type,real_time,op_type,hedui_cishu,dangqian_cishu,yizhu_time,yizhu_shuxing,changqi_yizhu_id) VALUES ('")
+//        			.append(history_id).append("','")
+//        			.append(current_application.current_patient_zhuyuan_id).append("','")
+//        			.append(dangqian_zhixing_state).append("','")
+//        			.append(dangqian_zhixing_state).append("','")
+//        			.append(current_application.current_user_number).append("','")
+//        			.append(current_application.current_user_name).append("','")
+//        			.append(yiZhuInfo.getZuhao()).append("',datetime('now', 'localtime'),'")
+//        			.append(yiZhuInfo.getYizhu_type()).append("', datetime('now', 'localtime'),'")
+//        			.append(dangqian_zhixing_state).append("','")
+//        			.append(hedui_cishu).append("','")
+//        			.append(dangqian_cishu).append("',date(strftime('%Y-%m-%d', 'now', 'localtime')),'0','")
+//        			.append(insert_type).append("' ");
+//		return insertSQLite.toString();
+//	}
+//	
+//	public String getInsertHistoryLiShiSQLite(YiZhuInfo yiZhuInfo, String dangqian_zhixing_state, String history_id, int dangqian_cishu, int hedui_cishu, int insert_type){
+//		StringBuilder insertSQLite = new StringBuilder();
+//		insertSQLite.append("INSERT INTO yizhu_zhixing_history_lishi (history_id,zhuyuan_id,zhixing_state,zhixing_type,zhixing_hushi_id,zhixing_hushi_name,zhixing_zuhao,zhixing_time,type,real_time,op_type,hedui_cishu,dangqian_cishu,yizhu_time,yizhu_shuxing,changqi_yizhu_id) VALUES ('")
+//					.append(history_id).append("','")
+//					.append(current_application.current_patient_zhuyuan_id).append("','")
+//					.append(dangqian_zhixing_state).append("','")
+//					.append(dangqian_zhixing_state).append("','")
+//					.append(current_application.current_user_number).append("','")
+//					.append(current_application.current_user_name).append("','")
+//					.append(yiZhuInfo.getZuhao()).append("',datetime('now', 'localtime'),'")
+//					.append(yiZhuInfo.getYizhu_type()).append("', datetime('now', 'localtime'),'")
+//					.append(dangqian_zhixing_state).append("','")
+//					.append(hedui_cishu).append("','")
+//					.append(dangqian_cishu).append("',date(strftime('%Y-%m-%d', 'now', 'localtime')),'0','")
+//					.append(insert_type).append("' ");
+//		return insertSQLite.toString();
+//	}
+	
+	/**
+	 * 其他操作
+	 * @param yiZhuInfo
+	 * @param insert_type
+	 */
+	public void yiZhuQiTaExecute(YiZhuInfo yiZhuInfo, int insert_type){
+		
+	}
 
 
 }

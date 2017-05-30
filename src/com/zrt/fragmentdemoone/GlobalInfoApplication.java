@@ -14,6 +14,9 @@ public class GlobalInfoApplication extends Application{
 	 public String yizhu_peiye_hedui_type = "输液";
 	public String yizhu_peiye_hedui_types = "'输液'";
 	
+//	public String DUODAI_SHUYE_ZHUSHE_TIPS = "";
+	public boolean yizhu_duodai_shuye_tixing = true;
+	
 	@Override
 	public void onCreate() {
 		super.onCreate();

@@ -1,7 +1,9 @@
 package com.zrt.fragmentdemoone.yizhu;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.zrt.fragmentdemoone.GlobalInfoApplication;
 
@@ -14,6 +16,8 @@ public abstract class YiZhuStatusBasic {
 	public SQLiteDatabase db;
 	
 	public GlobalInfoApplication current_application;
+	/** 护士扫描双签名：每一次进入医嘱执行界面，都需要扫描另一个护士的胸牌，进行签名后才能执行医嘱 */
+	public Map<String,String> mapScan = new HashMap<String,String>();
 	
 	/**
 	 * 
@@ -85,7 +89,7 @@ public abstract class YiZhuStatusBasic {
 	 * @param yiZhuInfo
 	 * @param zuhaoCursor
 	 */
-	private void getYiZhuData(YiZhuInfo yiZhuInfo, Cursor zuhaoCursor) {
+	public void getYiZhuData(YiZhuInfo yiZhuInfo, Cursor zuhaoCursor) {
 		// TODO Auto-generated method stub
 //		zuhaoCursor.getString(zuhaoCursor.getColumnIndex(""))
 		yiZhuInfo.setYizhu_id(zuhaoCursor.getInt(zuhaoCursor.getColumnIndex("yizhu_id")));
@@ -111,7 +115,7 @@ public abstract class YiZhuStatusBasic {
 		yiZhuInfo.setYizhu_time(zuhaoCursor.getString(zuhaoCursor.getColumnIndex("yizhu_time")));
 		yiZhuInfo.setChushi_state(zuhaoCursor.getString(zuhaoCursor.getColumnIndex("chushi_state")));
 		yiZhuInfo.setShouci_yongyao(zuhaoCursor.getString(zuhaoCursor.getColumnIndex("shouci_yongyao")));
-		yiZhuInfo.setYizhu_time(zuhaoCursor.getString(zuhaoCursor.getColumnIndex("yizhu_time")));
+		yiZhuInfo.setYongyao_time(zuhaoCursor.getString(zuhaoCursor.getColumnIndex("yongyao_time")));
 		yiZhuInfo.setYichang_lock(zuhaoCursor.getString(zuhaoCursor.getColumnIndex("yichang_lock")));
 		yiZhuInfo.setUnwork_time(zuhaoCursor.getString(zuhaoCursor.getColumnIndex("unwork_time")));
 		
@@ -124,10 +128,14 @@ public abstract class YiZhuStatusBasic {
 	 */
 	private List<YiZhuInfo.ContentInfo> getYiZhuContent(String zuhao) {
 		List<YiZhuInfo.ContentInfo> list = new ArrayList<>();
-		String contentSQLite = "select * from yizhu_info where zuhao = '" + zuhao + "' order by yizhu_id asc";
+		StringBuilder contentSQLite = new StringBuilder();
+		contentSQLite.append("select * from yizhu_info where zuhao = '")
+					 .append(zuhao)
+					 .append("' order by yizhu_id asc");
+//		String contentSQLite = "select * from yizhu_info where zuhao = '" + zuhao + "' order by yizhu_id asc";
 		Cursor cursor = null;
 		try {
-			cursor = db.rawQuery(contentSQLite, new String[0]);
+			cursor = db.rawQuery(contentSQLite.toString(), new String[0]);
 			int count = cursor.getCount();
 			while (cursor.moveToNext()) {
 				YiZhuInfo.ContentInfo contentInfo = new YiZhuInfo().new ContentInfo();
@@ -223,6 +231,96 @@ public abstract class YiZhuStatusBasic {
 	    releaseCursor(mxCursor);
 	    return localQitaLishi;
     }
+	
+	/**
+	 * 开始执行：修改yizhu_info表数据
+	 * @param yiZhuInfo
+	 * @return
+	 */
+	public String getUpdateBeginSQLite(YiZhuInfo yiZhuInfo){
+		StringBuilder updateSQLite = new StringBuilder();
+		updateSQLite.append("UPDATE yizhu_info SET zhixing_state = '开始执行',state = 'update',operate_time=datetime('now', 'localtime'),kuatian = '否' WHERE zuhao = '")
+					.append(yiZhuInfo.getZuhao())
+					.append("' ");
+		return updateSQLite.toString();
+	}
+	
+	/**
+	 * 执行完毕：修改yizhu_info表数据
+	 * @param yiZhuInfo
+	 * @return
+	 */
+	public String getUpdateCompletedSQLite(YiZhuInfo yiZhuInfo){
+		StringBuilder updateSQLite = new StringBuilder();
+		updateSQLite.append("UPDATE yizhu_info SET zhixing_state = case when chushi_state = '待配液' or chushi_state = '已校对' then chushi_state else '待配液' end ,state = 'update',wancheng_cishu = wancheng_cishu+1,operate_time=datetime('now', 'localtime') ,kuatian = '否' WHERE zuhao = '")
+					.append(yiZhuInfo.getZuhao())
+					.append("' ");
+		return updateSQLite.toString();
+	}
+	
+	/**
+	 * 医嘱执行：插入临时数据
+	 * @param yiZhuInfo
+	 * @param dangqian_zhixing_state 
+	 * @param history_id
+	 * @param dangqian_cishu
+	 * @param hedui_cishu
+	 * @param other_info
+	 * @param insert_type
+	 * @return
+	 */
+	public String getInsertHistorySQLite(YiZhuInfo yiZhuInfo, String dangqian_zhixing_state,String history_id, int dangqian_cishu, int hedui_cishu ,String other_info, int insert_type){
+		StringBuilder insertSQLite = new StringBuilder();
+        insertSQLite.append("INSERT INTO yizhu_zhixing_history (history_id,zhuyuan_id,zhixing_state,zhixing_type,zhixing_hushi_id,zhixing_hushi_name,zhixing_zuhao,zhixing_time,type,real_time,op_type,hedui_cishu,dangqian_cishu,yizhu_time,yizhu_shuxing,other_info,changqi_yizhu_id) VALUES ('")
+        			.append(history_id).append("','")
+        			.append(current_application.current_patient_zhuyuan_id).append("','")
+        			.append(dangqian_zhixing_state).append("','")
+        			.append(dangqian_zhixing_state).append("','")
+        			.append(current_application.current_user_number).append("','")
+        			.append(current_application.current_user_name).append("','")
+        			.append(yiZhuInfo.getZuhao()).append("',datetime('now', 'localtime'),'")
+        			.append(yiZhuInfo.getYizhu_type()).append("', datetime('now', 'localtime'),'")
+        			.append(dangqian_zhixing_state).append("','")
+        			.append(hedui_cishu).append("','")
+        			.append(dangqian_cishu).append("',date(strftime('%Y-%m-%d', 'now', 'localtime')),'0','")
+        			.append(other_info).append("','")
+        			.append(insert_type).append("' ");
+		return insertSQLite.toString();
+	}
+	
+	/**
+	 * 医嘱执行：插入最终数据
+	 * @param yiZhuInfo
+	 * @param dangqian_zhixing_state
+	 * @param history_id
+	 * @param dangqian_cishu
+	 * @param hedui_cishu
+	 * @param other_info
+	 * @param insert_type
+	 * @return
+	 */
+	public String getInsertHistoryLiShiSQLite(YiZhuInfo yiZhuInfo, String dangqian_zhixing_state, String history_id, int dangqian_cishu, int hedui_cishu, String other_info, int insert_type){
+		StringBuilder insertSQLite = new StringBuilder();
+		insertSQLite.append("INSERT INTO yizhu_zhixing_history_lishi (history_id,zhuyuan_id,zhixing_state,zhixing_type,zhixing_hushi_id,zhixing_hushi_name,zhixing_zuhao,zhixing_time,type,real_time,op_type,hedui_cishu,dangqian_cishu,yizhu_time,yizhu_shuxing,other_info,changqi_yizhu_id) VALUES ('")
+					.append(history_id).append("','")
+					.append(current_application.current_patient_zhuyuan_id).append("','")
+					.append(dangqian_zhixing_state).append("','")
+					.append(dangqian_zhixing_state).append("','")
+					.append(current_application.current_user_number).append("','")
+					.append(current_application.current_user_name).append("','")
+					.append(yiZhuInfo.getZuhao()).append("',datetime('now', 'localtime'),'")
+					.append(yiZhuInfo.getYizhu_type()).append("', datetime('now', 'localtime'),'")
+					.append(dangqian_zhixing_state).append("','")
+					.append(hedui_cishu).append("','")
+					.append(dangqian_cishu).append("',date(strftime('%Y-%m-%d', 'now', 'localtime')),'0','")
+					.append(other_info).append("','")
+					.append(insert_type).append("' ");
+		return insertSQLite.toString();
+	}
+	
+	public void executeDB(String insertSQLite){
+		this.db.execSQL(insertSQLite);
+	}
 	
 	/**
 	 * 结束sqlite查询

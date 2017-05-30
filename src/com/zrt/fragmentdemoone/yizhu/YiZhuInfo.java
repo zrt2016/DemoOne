@@ -76,6 +76,9 @@ public class YiZhuInfo {
 	private String wanbi_history = "";//wanbi_lishi_new
 	/** 皮试医嘱执行完毕录入值 */
 	private String pishi_value = "";//pishi_value
+
+	/** 多袋输液是否选择 */
+	private boolean operation_state = false;
 	
 	public int getYizhu_id() {
 		return yizhu_id;
@@ -286,6 +289,12 @@ public class YiZhuInfo {
 	}
 	public void setPishi_value(String pishi_value) {
 		this.pishi_value = pishi_value;
+	}
+	public boolean isOperation_state() {
+		return operation_state;
+	}
+	public void setOperation_state(boolean operation_state) {
+		this.operation_state = operation_state;
 	}
 	
 	public class ContentInfo {
