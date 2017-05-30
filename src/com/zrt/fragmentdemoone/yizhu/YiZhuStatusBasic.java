@@ -1,7 +1,9 @@
 package com.zrt.fragmentdemoone.yizhu;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.zrt.fragmentdemoone.GlobalInfoApplication;
 
@@ -14,6 +16,8 @@ public abstract class YiZhuStatusBasic {
 	public SQLiteDatabase db;
 	
 	public GlobalInfoApplication current_application;
+	/** 护士扫描双签名：每一次进入医嘱执行界面，都需要扫描另一个护士的胸牌，进行签名后才能执行医嘱 */
+	public Map<String,String> mapScan = new HashMap<String,String>();
 	
 	/**
 	 * 
@@ -224,6 +228,77 @@ public abstract class YiZhuStatusBasic {
 	    return localQitaLishi;
     }
 	
+	public String insertHistorySQLite(YiZhuInfo yiZhuInfo, String dangqian_zhixing_state,int history_id, int dangqian_cishu, int hedui_cishu ,String other_info, int insert_type){
+		StringBuilder insertSQLite = new StringBuilder();
+        insertSQLite.append("INSERT INTO yizhu_zhixing_history (history_id,zhuyuan_id,zhixing_state,zhixing_type,zhixing_hushi_id,zhixing_hushi_name,zhixing_zuhao,zhixing_time,type,real_time,op_type,hedui_cishu,dangqian_cishu,yizhu_time,yizhu_shuxing,other_info,changqi_yizhu_id) VALUES ('")
+        			.append(history_id).append("','")
+        			.append(current_application.current_patient_zhuyuan_id).append("','")
+        			.append(dangqian_zhixing_state).append("','")
+        			.append(dangqian_zhixing_state).append("','")
+        			.append(current_application.current_user_number).append("','")
+        			.append(current_application.current_user_name).append("','")
+        			.append(yiZhuInfo.getZuhao()).append("',datetime('now', 'localtime'),'")
+        			.append(dangqian_zhixing_state).append("','")
+        			.append(hedui_cishu).append("','")
+        			.append(dangqian_cishu).append("',date(strftime('%Y-%m-%d', 'now', 'localtime')),'0','")
+        			.append(other_info).append("','")//TODO 未完成
+        			.append(insert_type).append("' ");
+		return insertSQLite.toString();
+	}
+	public String insertHistoryLiShiSQLite(YiZhuInfo yiZhuInfo, String dangqian_zhixing_state, int history_id, int dangqian_cishu, int hedui_cishu, String other_info, int insert_type){
+		StringBuilder insertSQLite = new StringBuilder();
+//      String str4 = "INSERT INTO yizhu_zhixing_history_lishi (
+//		history_id,
+//		zhuyuan_id,
+//		zhixing_state,
+//		zhixing_type,
+//		zhixing_hushi_id,
+//		zhixing_hushi_name,
+//		zhixing_zuhao,
+//		zhixing_time,
+//		type,
+//		real_time,
+//		op_type,
+//		hedui_cishu,
+//		dangqian_cishu,
+//		yizhu_time,
+//		yizhu_shuxing,
+//		other_info,
+//		changqi_yizhu_id) VALUES ('"+
+//		history_id+"','" + 
+//		current_application.current_patient_zhuyuan_id + "','" + 
+//		op_type + "', '" + 
+//		op_type + "','" + 
+//		current_application.current_user_number + "','" + 
+//		current_application.current_user_name + "','" +
+//		str1 + "',"+
+//		"datetime('now', 'localtime'),'" + 
+//		yizhu_type + "', "+
+//		"datetime('now', 'localtime'),'"+
+//		op_type+"','"+
+//		hedui_cishu+"','"+
+//		dangqian_cishu+"',"+
+//		"date(strftime('%Y-%m-%d', 'now', 'localtime')),"+
+//		"'0','"+
+//		other_info+"','"+
+//		insert_type+"');";
+		insertSQLite.append("INSERT INTO yizhu_zhixing_history_lishi (history_id,zhuyuan_id,zhixing_state,zhixing_type,zhixing_hushi_id,zhixing_hushi_name,zhixing_zuhao,zhixing_time,type,real_time,op_type,hedui_cishu,dangqian_cishu,yizhu_time,yizhu_shuxing,other_info,changqi_yizhu_id) VALUES ('")
+		.append(history_id).append("','")
+		.append(current_application.current_patient_zhuyuan_id).append("','")
+		.append(dangqian_zhixing_state).append("','")
+		.append(dangqian_zhixing_state).append("','")
+		.append(current_application.current_user_number).append("','")
+		.append(current_application.current_user_name).append("','")
+		.append(yiZhuInfo.getZuhao()).append("',datetime('now', 'localtime'),'")
+		.append("");
+		
+		return insertSQLite.toString();
+	}
+	
+	public void executeDB(String insertSQLite){
+		this.db.rawQuery(insertSQLite, new String[0]);
+	}
+	
 	/**
 	 * 结束sqlite查询
 	 * @param cursor
@@ -233,6 +308,51 @@ public abstract class YiZhuStatusBasic {
 			cursor.close();
 			cursor = null;
 		}
+	}
+	
+	/**
+	   * 计算当前核对次数
+	   * @param zuhao 组号
+	   * @param op_type 操作类型
+	   * @param unwork_time 历史医嘱未完成日期
+	   * @param dangqian_cishu 当前流程次数
+	   * @return
+	   */
+	public int getCalcHeduiCishu(String zuhao,String op_type,int dangqian_cishu){
+		int hedui_cishu = 0;
+		String str1 = "";
+//		if("".equals(StringHelper.notEmpty(unwork_time))){
+		str1 = "select zhixing_zuhao,hedui_cishu,op_type from yizhu_zhixing_history_lishi where zhixing_zuhao = '"+zuhao
+				+"' and zhixing_time >= strftime('%Y-%m-%d', 'now', 'localtime') and dangqian_cishu = '"+dangqian_cishu+"' and op_type = '"+op_type+"' group by zhixing_zuhao,hedui_cishu ";
+//		}else{
+//			  str1 = "select zhixing_zuhao,hedui_cishu,op_type from yizhu_zhixing_history_lishi where zhixing_zuhao = '"+zuhao
+//					  +"' and yizhu_time = '"+unwork_time+"' and dangqian_cishu = '"+dangqian_cishu+"' and op_type = '"+op_type+"' group by zhixing_zuhao,hedui_cishu ";
+//		}
+		Cursor localCursor1 = this.db.rawQuery(str1, new String[0]);
+		hedui_cishu = localCursor1.getCount();
+		localCursor1.close();
+		return hedui_cishu + 1;
+	}
+	
+	/**
+	 * 获取当前医嘱当前完成次数
+	 * @param wancheng_cishu
+	 * @param meiri_cishu
+	 * @param tab_state
+	 * @return
+	 */
+	public int getDangqianWanchengCishu(int wancheng_cishu,int meiri_cishu,String tab_state) {
+		int dangqian_cishu = 0;
+//		if (!"".equals(StringHelper.notEmpty(wancheng_cishu)) & wancheng_cishu.matches("[0-9]+")) {
+		dangqian_cishu = wancheng_cishu;
+//		}
+		if(wancheng_cishu == meiri_cishu){
+			return dangqian_cishu;
+		}
+		if("执行完毕".equals(tab_state)){
+			return dangqian_cishu;
+		}
+		return dangqian_cishu + 1;
 	}
 	
 
