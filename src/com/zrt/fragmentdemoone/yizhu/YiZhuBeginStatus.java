@@ -114,8 +114,8 @@ public class YiZhuBeginStatus extends YiZhuStatusBasic{
 		int hedui_cishu = getCalcHeduiCishu(yiZhuInfo.getZuhao(), dangqian_zhixing_state, dangqian_cishu);
 		String history_id = UUID.randomUUID().toString();
 		executeDB(getUpdateCompletedSQLite(yiZhuInfo));
-		executeDB(getInsertHistorySQLite(yiZhuInfo, history_id, history_id, dangqian_cishu, hedui_cishu, "", insert_type));
-		executeDB(getInsertHistoryLiShiSQLite(yiZhuInfo, history_id, history_id, dangqian_cishu, hedui_cishu, "", insert_type));
+		executeDB(getInsertHistorySQLite(yiZhuInfo, dangqian_zhixing_state, history_id, dangqian_cishu, hedui_cishu, "", insert_type));
+		executeDB(getInsertHistoryLiShiSQLite(yiZhuInfo, dangqian_zhixing_state, history_id, dangqian_cishu, hedui_cishu, "", insert_type));
 	}
 	
 //	public String getUpdateCompletedSQLite(YiZhuInfo yiZhuInfo){

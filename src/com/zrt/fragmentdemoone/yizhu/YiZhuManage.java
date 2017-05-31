@@ -19,7 +19,7 @@ public class YiZhuManage {
 				statusBasic = new YiZhuWeiPeiYeStatus(yizhu_type);
 				break;
 			case status_weizhixing:
-				statusBasic = new YiZhuWeiZhiXingStatus(yizhu_type);
+				statusBasic = new YiZhuWeiZhiXingStatus(yizhu_type, current_application);
 				break;
 			case status_kaishi:
 				statusBasic = new YiZhuBeginStatus(yizhu_type);
@@ -31,7 +31,7 @@ public class YiZhuManage {
 				statusBasic = new YiZhuCompletedStatus(yizhu_type);
 				break;
 			default://默认医嘱状态为已校对
-				statusBasic = new YiZhuWeiZhiXingStatus(yizhu_type);
+				statusBasic = new YiZhuWeiZhiXingStatus(yizhu_type, current_application);
 				break;
 		}
 		
