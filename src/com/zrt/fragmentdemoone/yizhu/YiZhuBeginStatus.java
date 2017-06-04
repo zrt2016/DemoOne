@@ -51,7 +51,7 @@ public class YiZhuBeginStatus extends YiZhuStatusBasic implements DialogExecute{
 		// TODO Auto-generated method stub
 		Log.i(">>>>", "##"+object.toString()+"="+this.getClass().getName());
 		YiZhuInfo yiZhuInfo = (YiZhuInfo) object;
-		AlertDialogTools.getInstance(current_application).contentDialogThree(this, yiZhuInfo, dangqian_zhixing_state, other_operation, cancel);
+		AlertDialogTools.getInstance(current_application).contentDialogThree(this, yiZhuInfo, insert_type, dangqian_zhixing_state, other_operation, cancel);
 	}
 
 	@Override
@@ -122,8 +122,8 @@ public class YiZhuBeginStatus extends YiZhuStatusBasic implements DialogExecute{
 		int hedui_cishu = getCalcHeduiCishu(yiZhuInfo.getZuhao(), dangqian_zhixing_state, dangqian_cishu);
 		String history_id = UUID.randomUUID().toString();
 		executeDB(getUpdateCompletedSQLite(yiZhuInfo));
-		executeDB(getInsertHistorySQLite(yiZhuInfo, dangqian_zhixing_state, history_id, dangqian_cishu, hedui_cishu, "", insert_type));
-		executeDB(getInsertHistoryLiShiSQLite(yiZhuInfo, dangqian_zhixing_state, history_id, dangqian_cishu, hedui_cishu, "", insert_type));
+		executeDB(getInsertHistorySQLite(yiZhuInfo, dangqian_zhixing_state, dangqian_zhixing_state, history_id, dangqian_cishu, hedui_cishu, "", insert_type, ""));
+		executeDB(getInsertHistoryLiShiSQLite(yiZhuInfo, dangqian_zhixing_state, dangqian_zhixing_state, history_id, dangqian_cishu, hedui_cishu, "", insert_type, ""));
 	}
 	
 	/**
@@ -132,36 +132,104 @@ public class YiZhuBeginStatus extends YiZhuStatusBasic implements DialogExecute{
 	 * @param insert_type
 	 */
 	public void yiZhuQiTaExecute(YiZhuInfo yiZhuInfo, int insert_type){
-		
-	}
-
-	@Override
-	public void executeYiZhu(YiZhuInfo yiZhuInfo, String state) {
-		// TODO Auto-generated method stub
-		if (state.equals(dangqian_zhixing_state)){
-//			yiZhuCompleteExecute(yiZhuInfo, insert_type);
+		//TODO 其他操作
+		String[] itemOperation = current_application.yizhu_qita_caozuo_xuanzhe.split("\\|");
+		if(null == itemOperation || itemOperation.length ==0){
+			itemOperation = new String[]{ "暂停", "穿刺", "录入滴速", "药物反应", "巡视", "拔针", "接液" ,"其它"};
 		}
-		
+		AlertDialogTools.getInstance(current_application).otherOperationDialog(this, yiZhuInfo, insert_type, itemOperation); 
 	}
 
 	@Override
-	public void otherOperation(YiZhuInfo yiZhuInfo, String state) {
-		// TODO Auto-generated method stub
+	public void executeYiZhu(YiZhuInfo yiZhuInfo, String state, int insert_type) {
+		// TODO 开始执行
+		AlertDialogTools.getInstance(current_application).dismisAlertDialog();
+		if (state.equals(dangqian_zhixing_state)){
+			yiZhuCompleteExecute(yiZhuInfo, insert_type);
+			return;
+		}
 		if (state.equals(other_operation)){
 			
 		}
 	}
 
 	@Override
-	public void cancel(String state) {
-		// TODO Auto-generated method stub
-		if (state.equals(cancel)){
-			
+	public void otherOperation(YiZhuInfo yiZhuInfo, String state, int insert_type) {
+		// TODO 其他操作
+		AlertDialogTools.getInstance(current_application).dismisAlertDialog();
+		if (state.equals(other_operation)){
+			yiZhuQiTaExecute(yiZhuInfo, insert_type);
+			return;
 		}
 	}
 
-	
+	@Override
+	public void cancel(String state) {
+		// TODO 取消
+		AlertDialogTools.getInstance(current_application).dismisAlertDialog();
+		if (state.equals(cancel)){
+			
+			return;
+		}
+		if (state.equals(other_operation)){
+			
+			return;
+		}
+	}
 
+	@Override
+	public void executeOtherOperation(YiZhuInfo yiZhuInfo, String op_type, int insert_type) {
+		// TODO Auto-generated method stub
+		if (op_type.equals("录入滴速")){
+			
+			return;
+		}
+		if (op_type.equals("药物反应")){
+			 
+			return;
+		}
+		if (op_type.equals("其它")){
+			
+			return;
+		}
+		insertOtherOpteration(yiZhuInfo, op_type, insert_type, "");
+	}
+
+	
+	public void insertOtherOpteration(YiZhuInfo yiZhuInfo, String op_type, int insert_type, String beizhu){
+		String history_id = UUID.randomUUID().toString();
+		String other_info = mapScan.get(yiZhuInfo.getZuhao());
+		int dangqian_cishu = getDangqianWanchengCishu(yiZhuInfo.getWancheng_cishu(), yiZhuInfo.getMeiri_cishu(), "");
+		int hedui_cishu = getCalcHeduiCishu(yiZhuInfo.getZuhao(), op_type, dangqian_cishu);
+		String zhixing_state = "开始执行";
+		if (op_type.contains("暂停")){
+			zhixing_state = "暂停执行";
+			executeDB(getUpdateBeginSQLite(yiZhuInfo, zhixing_state));
+		}
+		executeDB(getInsertHistorySQLite(yiZhuInfo, zhixing_state, op_type, history_id, dangqian_cishu, hedui_cishu, other_info, insert_type, beizhu));
+		executeDB(getInsertHistoryLiShiSQLite(yiZhuInfo, zhixing_state, op_type, history_id, dangqian_cishu, hedui_cishu, other_info, insert_type, beizhu));
+		if("开始执行".equals(zhixing_state) && "药物反应".equals(op_type)){
+			executeDB(insertShouCiYongYaoHistory(yiZhuInfo));
+			executeDB("delete from yizhu_shouci_yongyao where zuhao = '"+yiZhuInfo.getZuhao()+"' ");
+		}
+		
+	}
+	
+	/**
+	 * 插入首次用药记录
+	 * @param yiZhuInfo
+	 * @return
+	 */
+	public String insertShouCiYongYaoHistory(YiZhuInfo yiZhuInfo){
+		StringBuilder insertSQLite = new StringBuilder();
+		insertSQLite.append("INSERT INTO shouciyongyao_duqu_lishi (zuhao,duqu_time,zhuyuan_id,zhixing_hushi_id,zhixing_hushi_name,type)  VALUES ('")
+					.append(yiZhuInfo.getZuhao()).append("',datetime('now', 'localtime'),'")
+					.append(current_application.current_patient_zhuyuan_id).append("', '")
+					.append(current_application.current_user_number).append("', '")
+					.append(current_application.current_user_name).append("', '")
+					.append(yiZhuInfo.getYizhu_type()).append("')");
+		return insertSQLite.toString();
+	}
 
 
 }

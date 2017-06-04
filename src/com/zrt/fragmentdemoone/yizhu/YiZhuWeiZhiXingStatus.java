@@ -133,9 +133,9 @@ public class YiZhuWeiZhiXingStatus extends YiZhuStatusBasic{
 		int dangqian_cishu = getDangqianWanchengCishu(yiZhuInfo.getWancheng_cishu(), yiZhuInfo.getMeiri_cishu(), "");
 		int hedui_cishu = getCalcHeduiCishu(yiZhuInfo.getZuhao(), dangqian_zhixing_state, dangqian_cishu);
 		String other_info = mapScan.get(yiZhuInfo.getZuhao());
-		executeDB(getUpdateBeginSQLite(yiZhuInfo));
-		executeDB(getInsertHistorySQLite(yiZhuInfo, dangqian_zhixing_state, history_id, dangqian_cishu, hedui_cishu, other_info, insert_type));
-		executeDB(getInsertHistoryLiShiSQLite(yiZhuInfo, dangqian_zhixing_state, history_id, dangqian_cishu, hedui_cishu, other_info, insert_type));
+		executeDB(getUpdateBeginSQLite(yiZhuInfo, dangqian_zhixing_state));
+		executeDB(getInsertHistorySQLite(yiZhuInfo, dangqian_zhixing_state, dangqian_zhixing_state, history_id, dangqian_cishu, hedui_cishu, other_info, insert_type, ""));
+		executeDB(getInsertHistoryLiShiSQLite(yiZhuInfo, dangqian_zhixing_state, dangqian_zhixing_state, history_id, dangqian_cishu, hedui_cishu, other_info, insert_type, ""));
 	}
 	
 	/**
@@ -222,8 +222,8 @@ public class YiZhuWeiZhiXingStatus extends YiZhuStatusBasic{
 				int hedui_cishu = getCalcHeduiCishu(yiZhuInfo.getZuhao(), dangqian_zhixing_state, dangqian_cishu);
 				String history_id = UUID.randomUUID().toString();
 				executeDB(getUpdateCompletedSQLite(yiZhuInfo));
-				executeDB(getInsertHistorySQLite(yiZhuInfo, dangqian_zhixing_state, history_id, dangqian_cishu, hedui_cishu, "", insert_type));
-				executeDB(getInsertHistoryLiShiSQLite(yiZhuInfo, dangqian_zhixing_state, history_id, dangqian_cishu, hedui_cishu, "", insert_type));
+				executeDB(getInsertHistorySQLite(yiZhuInfo, dangqian_zhixing_state, dangqian_zhixing_state, history_id, dangqian_cishu, hedui_cishu, "", insert_type, ""));
+				executeDB(getInsertHistoryLiShiSQLite(yiZhuInfo, dangqian_zhixing_state, dangqian_zhixing_state, history_id, dangqian_cishu, hedui_cishu, "", insert_type, ""));
 			}
 		}
 	}
@@ -235,13 +235,13 @@ public class YiZhuWeiZhiXingStatus extends YiZhuStatusBasic{
 		String other_info = mapScan.get(yiZhuInfo.getZuhao());
 		
 		String history_id_one = UUID.randomUUID().toString();
-		executeDB(getUpdateBeginSQLite(yiZhuInfo));
-		executeDB(getInsertHistorySQLite(yiZhuInfo, dangqian_zhixing_state, history_id_one, dangqian_cishu, hedui_cishu, other_info, insert_type));
-		executeDB(getInsertHistoryLiShiSQLite(yiZhuInfo, dangqian_zhixing_state, history_id_one, dangqian_cishu, hedui_cishu, other_info, insert_type));
+//		executeDB(getUpdateBeginSQLite(yiZhuInfo, dangqian_zhixing_state));
+		executeDB(getInsertHistorySQLite(yiZhuInfo, dangqian_zhixing_state, dangqian_zhixing_state, history_id_one, dangqian_cishu, hedui_cishu, other_info, insert_type, ""));
+		executeDB(getInsertHistoryLiShiSQLite(yiZhuInfo, dangqian_zhixing_state, dangqian_zhixing_state, history_id_one, dangqian_cishu, hedui_cishu, other_info, insert_type, ""));
 		String history_id_two = UUID.randomUUID().toString();
 		executeDB(getUpdateCompletedSQLite(yiZhuInfo));
-		executeDB(getInsertHistorySQLite(yiZhuInfo, dangqian_zhixing_state, history_id_two, dangqian_cishu, hedui_cishu, "", insert_type));
-		executeDB(getInsertHistoryLiShiSQLite(yiZhuInfo, dangqian_zhixing_state, history_id_two, dangqian_cishu, hedui_cishu, "", insert_type));
+		executeDB(getInsertHistorySQLite(yiZhuInfo, dangqian_zhixing_state, dangqian_zhixing_state, history_id_two, dangqian_cishu, hedui_cishu, "", insert_type, ""));
+		executeDB(getInsertHistoryLiShiSQLite(yiZhuInfo, dangqian_zhixing_state, dangqian_zhixing_state, history_id_two, dangqian_cishu, hedui_cishu, "", insert_type, ""));
 	}
 
 }

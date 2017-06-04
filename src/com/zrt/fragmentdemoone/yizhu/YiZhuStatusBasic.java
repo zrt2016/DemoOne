@@ -233,13 +233,16 @@ public abstract class YiZhuStatusBasic {
     }
 	
 	/**
-	 * 开始执行：修改yizhu_info表数据
+	 * 修改yizhu_info表数据中的执行状态
 	 * @param yiZhuInfo
+	 * @param zhiXing_state 开始执行、暂停执行
 	 * @return
 	 */
-	public String getUpdateBeginSQLite(YiZhuInfo yiZhuInfo){
+	public String getUpdateBeginSQLite(YiZhuInfo yiZhuInfo, String zhiXing_state){
 		StringBuilder updateSQLite = new StringBuilder();
-		updateSQLite.append("UPDATE yizhu_info SET zhixing_state = '开始执行',state = 'update',operate_time=datetime('now', 'localtime'),kuatian = '否' WHERE zuhao = '")
+		updateSQLite.append("UPDATE yizhu_info SET zhixing_state = '")
+					.append(zhiXing_state)
+					.append("',state = 'update',operate_time=datetime('now', 'localtime'),kuatian = '否' WHERE zuhao = '")
 					.append(yiZhuInfo.getZuhao())
 					.append("' ");
 		return updateSQLite.toString();
@@ -269,9 +272,9 @@ public abstract class YiZhuStatusBasic {
 	 * @param insert_type
 	 * @return
 	 */
-	public String getInsertHistorySQLite(YiZhuInfo yiZhuInfo, String dangqian_zhixing_state,String history_id, int dangqian_cishu, int hedui_cishu ,String other_info, int insert_type){
+	public String getInsertHistorySQLite(YiZhuInfo yiZhuInfo, String dangqian_zhixing_state, String op_type,String history_id, int dangqian_cishu, int hedui_cishu ,String other_info, int insert_type, String beizhu){
 		StringBuilder insertSQLite = new StringBuilder();
-        insertSQLite.append("INSERT INTO yizhu_zhixing_history (history_id,zhuyuan_id,zhixing_state,zhixing_type,zhixing_hushi_id,zhixing_hushi_name,zhixing_zuhao,zhixing_time,type,real_time,op_type,hedui_cishu,dangqian_cishu,yizhu_time,yizhu_shuxing,other_info,changqi_yizhu_id) VALUES ('")
+        insertSQLite.append("INSERT INTO yizhu_zhixing_history (history_id,zhuyuan_id,zhixing_state,zhixing_type,zhixing_hushi_id,zhixing_hushi_name,zhixing_zuhao,zhixing_time,type,real_time,beizhu,op_type,hedui_cishu,dangqian_cishu,yizhu_time,yizhu_shuxing,other_info,changqi_yizhu_id) VALUES ('")
         			.append(history_id).append("','")
         			.append(current_application.current_patient_zhuyuan_id).append("','")
         			.append(dangqian_zhixing_state).append("','")
@@ -280,12 +283,13 @@ public abstract class YiZhuStatusBasic {
         			.append(current_application.current_user_name).append("','")
         			.append(yiZhuInfo.getZuhao()).append("',datetime('now', 'localtime'),'")
         			.append(yiZhuInfo.getYizhu_type()).append("', datetime('now', 'localtime'),'")
-        			.append(dangqian_zhixing_state).append("','")
+        			.append(beizhu).append("','")
+        			.append(op_type).append("','")
         			.append(hedui_cishu).append("','")
         			.append(dangqian_cishu).append("',date(strftime('%Y-%m-%d', 'now', 'localtime')),'0','")
         			.append(other_info).append("','")
         			.append(insert_type).append("' ");
-		return insertSQLite.toString();
+        return insertSQLite.toString();
 	}
 	
 	/**
@@ -299,9 +303,9 @@ public abstract class YiZhuStatusBasic {
 	 * @param insert_type
 	 * @return
 	 */
-	public String getInsertHistoryLiShiSQLite(YiZhuInfo yiZhuInfo, String dangqian_zhixing_state, String history_id, int dangqian_cishu, int hedui_cishu, String other_info, int insert_type){
+	public String getInsertHistoryLiShiSQLite(YiZhuInfo yiZhuInfo, String dangqian_zhixing_state, String op_type, String history_id, int dangqian_cishu, int hedui_cishu, String other_info, int insert_type, String beizhu){
 		StringBuilder insertSQLite = new StringBuilder();
-		insertSQLite.append("INSERT INTO yizhu_zhixing_history_lishi (history_id,zhuyuan_id,zhixing_state,zhixing_type,zhixing_hushi_id,zhixing_hushi_name,zhixing_zuhao,zhixing_time,type,real_time,op_type,hedui_cishu,dangqian_cishu,yizhu_time,yizhu_shuxing,other_info,changqi_yizhu_id) VALUES ('")
+		insertSQLite.append("INSERT INTO yizhu_zhixing_history_lishi (history_id,zhuyuan_id,zhixing_state,zhixing_type,zhixing_hushi_id,zhixing_hushi_name,zhixing_zuhao,zhixing_time,type,real_time,beizhu,op_type,hedui_cishu,dangqian_cishu,yizhu_time,yizhu_shuxing,other_info,changqi_yizhu_id) VALUES ('")
 					.append(history_id).append("','")
 					.append(current_application.current_patient_zhuyuan_id).append("','")
 					.append(dangqian_zhixing_state).append("','")
@@ -310,7 +314,8 @@ public abstract class YiZhuStatusBasic {
 					.append(current_application.current_user_name).append("','")
 					.append(yiZhuInfo.getZuhao()).append("',datetime('now', 'localtime'),'")
 					.append(yiZhuInfo.getYizhu_type()).append("', datetime('now', 'localtime'),'")
-					.append(dangqian_zhixing_state).append("','")
+					.append(beizhu).append("','")
+					.append(op_type).append("','")
 					.append(hedui_cishu).append("','")
 					.append(dangqian_cishu).append("',date(strftime('%Y-%m-%d', 'now', 'localtime')),'0','")
 					.append(other_info).append("','")
