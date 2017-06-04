@@ -30,7 +30,7 @@ public abstract class YiZhuStatusBasic {
 	 * 医嘱执行操作
 	 * @param object
 	 */
-	public abstract <T> void onExecute(T object);
+	public abstract <T> void onExecute(T object, int insert_type);
 	
 	/**
 	 * 2017-05-15

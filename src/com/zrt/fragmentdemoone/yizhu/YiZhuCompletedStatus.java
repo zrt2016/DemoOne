@@ -51,7 +51,7 @@ public class YiZhuCompletedStatus extends YiZhuStatusBasic{
 	}
 
 	@Override
-	public <T> void onExecute(T object) {
+	public <T> void onExecute(T object, int insert_type) {
 		// TODO Auto-generated method stub
 		Log.i(">>>>", "##"+object.toString()+"="+this.getClass().getName());
 	}
