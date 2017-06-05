@@ -14,12 +14,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class AlertDialogTools {
 	
 	public static AlertDialogTools dialogTools;
 	
-	public boolean isShow = false;
+	private boolean isShow = false;
 
 	public AlertDialog alertDialog;
 	
@@ -117,29 +118,45 @@ public class AlertDialogTools {
 		
 	}
 	
+	/**
+	 * 滴速录入
+	 * @param dialogExecute
+	 * @param yiZhuInfo
+	 * @param op_type
+	 * @param insert_type
+	 */
 	public void otherInputDiSu(final DialogExecute dialogExecute, final YiZhuInfo yiZhuInfo, final String op_type, final int insert_type){
 		AlertDialog.Builder dialog = new AlertDialog.Builder(context);
 		View inputDiSuViwe = LayoutInflater.from(context).inflate(R.layout.yizhu_luru_disu_dialog, null);
 		TextView tv_Title = (TextView) inputDiSuViwe.findViewById(R.id.dialog_title);
 		tv_Title.setText(op_type);
-		TextView tv_luRuDanWei = (TextView) inputDiSuViwe.findViewById(R.id.luru_disu_danwei_id);
-		tv_luRuDanWei.setVisibility(View.GONE);
 		final EditText disu_text = (EditText) inputDiSuViwe.findViewById(R.id.luru_disu_text);
-		disu_text.setInputType(InputType.TYPE_CLASS_TEXT);
-		disu_text.setGravity(View.FOCUS_DOWN);
+		if (!op_type.equals("录入滴速")){
+			TextView tv_luRuDanWei = (TextView) inputDiSuViwe.findViewById(R.id.luru_disu_danwei_id);
+			tv_luRuDanWei.setVisibility(View.GONE);
+			disu_text.setInputType(InputType.TYPE_CLASS_TEXT);
+			disu_text.setGravity(View.FOCUS_DOWN);
+		}
 		dialog.setView(inputDiSuViwe);
+		
+		final String lurudisu_danwei = context.getResources().getString(R.string.luru_disu_danwei);
+
 		dialog.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				// TODO Auto-generated method stub
-				String disu_value = disu_text.getEditableText().toString();
+				String disu_value = disu_text.getText().toString().trim();
 				if ("".equals(disu_value)){
 					switchAlertDialog(dialog, false);
+					Toast.makeText(context, "", Toast.LENGTH_SHORT).show();
 					return;
 				}
 				if (!switchDialog){
 					switchAlertDialog(dialog, true);
+				}
+				if (op_type.equals("录入滴速")){
+					disu_value = disu_value + lurudisu_danwei;
 				}
 				dialogExecute.executeInputOtherValue(yiZhuInfo, op_type, insert_type, disu_value);
 				dismisAlertDialog();
@@ -194,5 +211,9 @@ public class AlertDialogTools {
             Log.e("", e.getMessage());
             e.printStackTrace();
         }
+	}
+	
+	public boolean isShow(){
+		return isShow;
 	}
 }
