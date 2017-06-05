@@ -113,7 +113,7 @@ public class YiZhuBeginStatus extends YiZhuStatusBasic implements DialogExecute{
 	}
 	
 	/**
-	 * 执行完毕
+	 * 状态：执行完毕
 	 * @param yiZhuInfo
 	 * @param insert_type
 	 */
@@ -127,7 +127,7 @@ public class YiZhuBeginStatus extends YiZhuStatusBasic implements DialogExecute{
 	}
 	
 	/**
-	 * 其他操作
+	 * 状态：其他操作
 	 * @param yiZhuInfo
 	 * @param insert_type
 	 */
@@ -139,6 +139,7 @@ public class YiZhuBeginStatus extends YiZhuStatusBasic implements DialogExecute{
 		}
 		AlertDialogTools.getInstance(current_application).otherOperationDialog(this, yiZhuInfo, insert_type, itemOperation); 
 	}
+	
 
 	@Override
 	public void executeYiZhu(YiZhuInfo yiZhuInfo, String state, int insert_type) {
@@ -148,15 +149,13 @@ public class YiZhuBeginStatus extends YiZhuStatusBasic implements DialogExecute{
 			yiZhuCompleteExecute(yiZhuInfo, insert_type);
 			return;
 		}
-		if (state.equals(other_operation)){
-			
-		}
+		
 	}
 
 	@Override
 	public void otherOperation(YiZhuInfo yiZhuInfo, String state, int insert_type) {
 		// TODO 其他操作
-		AlertDialogTools.getInstance(current_application).dismisAlertDialog();
+//		AlertDialogTools.getInstance(current_application).dismisAlertDialog();
 		if (state.equals(other_operation)){
 			yiZhuQiTaExecute(yiZhuInfo, insert_type);
 			return;
@@ -166,7 +165,7 @@ public class YiZhuBeginStatus extends YiZhuStatusBasic implements DialogExecute{
 	@Override
 	public void cancel(String state) {
 		// TODO 取消
-		AlertDialogTools.getInstance(current_application).dismisAlertDialog();
+//		AlertDialogTools.getInstance(current_application).dismisAlertDialog();
 		if (state.equals(cancel)){
 			
 			return;
@@ -181,7 +180,7 @@ public class YiZhuBeginStatus extends YiZhuStatusBasic implements DialogExecute{
 	public void executeOtherOperation(YiZhuInfo yiZhuInfo, String op_type, int insert_type) {
 		// TODO Auto-generated method stub
 		if (op_type.equals("录入滴速")){
-			
+			AlertDialogTools.getInstance(current_application).otherInputDiSu(this, yiZhuInfo, op_type, insert_type);
 			return;
 		}
 		if (op_type.equals("药物反应")){
@@ -194,8 +193,20 @@ public class YiZhuBeginStatus extends YiZhuStatusBasic implements DialogExecute{
 		}
 		insertOtherOpteration(yiZhuInfo, op_type, insert_type, "");
 	}
-
 	
+	@Override
+	public void executeInputOtherValue(YiZhuInfo yiZhuInfo, String op_type, int insert_type, String beizhu) {
+		// TODO Auto-generated method stub
+		insertOtherOpteration(yiZhuInfo, op_type, insert_type, beizhu);
+	}
+	
+	/**
+	 * 其他操作：数据存储
+	 * @param yiZhuInfo
+	 * @param op_type 
+	 * @param insert_type
+	 * @param beizhu
+	 */
 	public void insertOtherOpteration(YiZhuInfo yiZhuInfo, String op_type, int insert_type, String beizhu){
 		String history_id = UUID.randomUUID().toString();
 		String other_info = mapScan.get(yiZhuInfo.getZuhao());
@@ -216,7 +227,7 @@ public class YiZhuBeginStatus extends YiZhuStatusBasic implements DialogExecute{
 	}
 	
 	/**
-	 * 插入首次用药记录
+	 * 首次用药记录数据
 	 * @param yiZhuInfo
 	 * @return
 	 */
@@ -230,6 +241,5 @@ public class YiZhuBeginStatus extends YiZhuStatusBasic implements DialogExecute{
 					.append(yiZhuInfo.getYizhu_type()).append("')");
 		return insertSQLite.toString();
 	}
-
 
 }

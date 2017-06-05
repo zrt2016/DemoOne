@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="#ffeaeaea"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/dialog_title"
+        android:layout_width="fill_parent"
+        android:layout_height="45.0dip"
+        android:background="@color/header_bj"
+        android:gravity="center"
+        android:textColor="#ffffffff"
+        android:textSize="18.0sp" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15.0dip"
+        android:orientation="horizontal" 
+        android:layout_gravity="center">
+		
+        <com.zpdyf.mobileemr.tools.widget.MyEditText 
+            android:id="@+id/luru_disu_text"
+            android:layout_width="0dp"
+        	android:layout_height="35.0dip"
+        	android:layout_weight="1"
+        	android:gravity="right" 
+        	android:clickable="true"
+        	android:inputType="number"
+        	android:numeric="integer"/>
+        
+        <TextView 
+            android:id="@+id/luru_disu_danwei_id"
+            android:layout_width="0dp"
+        	android:layout_height="35.0dip"
+        	android:layout_weight="1"
+        	android:text="@string/luru_disu_danwei" />
+        
+    </LinearLayout>
+
+</LinearLayout>

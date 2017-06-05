@@ -8,4 +8,6 @@
 	<string name="kaishizhixing">开始</string>
 	<string name="zantingzhixing">暂停</string>
 	<string name="zhixingwanbi">完毕</string>
+	
+	<string name="luru_disu_danwei">滴/每分钟</string>
 </resources>
