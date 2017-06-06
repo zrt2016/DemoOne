@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import com.zrt.fragmentdemoone.GlobalInfoApplication;
 
@@ -41,6 +42,37 @@ public abstract class YiZhuStatusBasic {
 	
 	public void setCurrent_application(GlobalInfoApplication current_application) {
 		this.current_application = current_application;
+	}
+	
+	/**
+	 * 开始执行
+	 * @param yiZhuInfo 
+	 * @param insert_type
+	 */
+	public void yiZhuBeginExecute(YiZhuInfo yiZhuInfo, String dangqian_zhixing_state, int insert_type) {
+		// TODO Auto-generated method stub
+		String history_id = UUID.randomUUID().toString();
+		int dangqian_cishu = getDangqianWanchengCishu(yiZhuInfo.getWancheng_cishu(), yiZhuInfo.getMeiri_cishu(), "");
+		int hedui_cishu = getCalcHeduiCishu(yiZhuInfo.getZuhao(), dangqian_zhixing_state, dangqian_cishu);
+		String other_info = mapScan.get(yiZhuInfo.getZuhao());
+		executeDB(getUpdateBeginSQLite(yiZhuInfo, dangqian_zhixing_state));
+		executeDB(getInsertHistorySQLite(yiZhuInfo, dangqian_zhixing_state, dangqian_zhixing_state, history_id, dangqian_cishu, hedui_cishu, other_info, insert_type, ""));
+		executeDB(getInsertHistoryLiShiSQLite(yiZhuInfo, dangqian_zhixing_state, dangqian_zhixing_state, history_id, dangqian_cishu, hedui_cishu, other_info, insert_type, ""));
+	}
+	
+	/**
+	 * 状态：执行完毕
+	 * @param yiZhuInfo
+	 * @param insert_type
+	 */
+	public void yiZhuCompleteExecute(YiZhuInfo yiZhuInfo, String dangqian_zhixing_state, int insert_type) {
+		int dangqian_cishu = getDangqianWanchengCishu(yiZhuInfo.getWancheng_cishu(), yiZhuInfo.getMeiri_cishu(), "");
+		int hedui_cishu = getCalcHeduiCishu(yiZhuInfo.getZuhao(), dangqian_zhixing_state, dangqian_cishu);
+		String history_id = UUID.randomUUID().toString();
+		executeDB(getUpdateCompletedSQLite(yiZhuInfo));
+		executeDB(getInsertHistorySQLite(yiZhuInfo, dangqian_zhixing_state, dangqian_zhixing_state, history_id, dangqian_cishu, hedui_cishu, "", insert_type, ""));
+		executeDB(getInsertHistoryLiShiSQLite(yiZhuInfo, dangqian_zhixing_state, dangqian_zhixing_state, history_id, dangqian_cishu, hedui_cishu, "", insert_type, ""));
+		
 	}
 	
 	

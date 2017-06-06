@@ -1,18 +1,27 @@
 package com.zrt.fragmentdemoone.yizhu.tools;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 import com.zrt.fragmentdemoone.R;
 import com.zrt.fragmentdemoone.yizhu.YiZhuInfo;
+import com.zrt.fragmentdemoone.yizhu.tools.DialogAdapter.ViewHolder;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnKeyListener;
 import android.text.InputType;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,7 +38,13 @@ public class AlertDialogTools {
 	/** 其他操作中记录选择项 */
 	public String selectOtherItem;
 	
+	/** 是否可关闭dialog */
 	public boolean switchDialog = true;
+	
+	/**
+	 * 多袋输液全选按钮点击记录
+	 */
+//	private boolean duoDaiShuYeQuanXuan;
 	
 	public AlertDialogTools(Context context) {
 		// TODO Auto-generated constructor stub
@@ -125,7 +140,7 @@ public class AlertDialogTools {
 	 * @param op_type
 	 * @param insert_type
 	 */
-	public void otherInputDiSu(final DialogExecute dialogExecute, final YiZhuInfo yiZhuInfo, final String op_type, final int insert_type){
+	public void otherInputDiSuDialog(final DialogExecute dialogExecute, final YiZhuInfo yiZhuInfo, final String op_type, final int insert_type){
 		AlertDialog.Builder dialog = new AlertDialog.Builder(context);
 		View inputDiSuViwe = LayoutInflater.from(context).inflate(R.layout.yizhu_luru_disu_dialog, null);
 		TextView tv_Title = (TextView) inputDiSuViwe.findViewById(R.id.dialog_title);
@@ -177,6 +192,102 @@ public class AlertDialogTools {
 		showAlertDialog(dialog);
 	}
 	
+	public void existsStartShuYeDialog(final DialogExecute dialogExecute,final List<YiZhuInfo> zhiXingList, final YiZhuInfo yiZhuInfo,final int insert_type){
+		final AlertDialog.Builder existsDialog = new AlertDialog.Builder(this.context);
+//		adb.setIcon(R.drawable.ic_logo);
+//		adb.setTitle("存在"+this.zhiXingList.size()+"条医嘱未执行完毕\n请选择要结束的医嘱");
+		View existView = LayoutInflater.from(this.context).inflate(R.layout.custom_alertdialog_listview, null);
+		((TextView) existView.findViewById(R.id.custom_dialog_title)).setText("存在"+zhiXingList.size()+"条医嘱未执行完毕\n请选择要结束的医嘱");
+		final CheckBox cb = (CheckBox) existView.findViewById(R.id.custom_dialog_quanxuan);
+		final ListView lv = (ListView) existView.findViewById(R.id.custom_dialog_lv);
+		final DialogAdapter adapter = new DialogAdapter(this.context, zhiXingList);
+		lv.setAdapter(adapter);
+		existsDialog.setView(existView);
+		lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				DialogAdapter.ViewHolder holder = (ViewHolder) view.getTag();
+				holder.cb_state.toggle();
+				if (!holder.cb_state.isChecked()){
+					cb.setChecked(false);
+				}else{
+					boolean flag = false;
+					for (int x=0; x<zhiXingList.size(); x++){
+						if (!zhiXingList.get(x).isOperation_state())
+							flag = true;
+					}
+					if (!flag){
+						cb.setChecked(true);
+					}
+				}
+			}
+		});
+//		cb.setOnTouchListener(new View.OnTouchListener() {
+//			
+//			@Override
+//			public boolean onTouch(View v, MotionEvent event) {
+////				duoDaiShuYeQuanXuan = true;
+//				return false;
+//			}
+//		});
+		cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//				if (duoDaiShuYeQuanXuan){
+					for (int x=0; x<zhiXingList.size(); x++){
+						zhiXingList.get(x).setOperation_state(isChecked);
+					}
+					adapter.notifyDataSetChanged();
+//					duoDaiShuYeQuanXuan = false;
+//				}
+			}
+		});
+		existsDialog.setPositiveButton("选择执行", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				if (dialogExecute.executeExistsStartYiZhu(zhiXingList, insert_type)){
+					if (!switchDialog){
+						switchAlertDialog(dialog, true);
+					}
+					dialogExecute.executeYiZhu(yiZhuInfo, "执行完毕", insert_type);
+					return;
+				}
+				switchAlertDialog(dialog, false);
+				
+			}
+		});
+		existsDialog.setNeutralButton("全部执行", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				for (int x=0; x<zhiXingList.size(); x++){
+					zhiXingList.get(x).setOperation_state(true);
+				}
+				dialogExecute.executeExistsStartYiZhu(zhiXingList, insert_type);
+				dialogExecute.executeYiZhu(yiZhuInfo, "执行完毕", insert_type);
+				if (!switchDialog){
+					switchAlertDialog(dialog, true);
+				}
+			}
+		});
+		existsDialog.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				if (!switchDialog){
+					switchAlertDialog(dialog, true);
+				}
+			}
+		});
+		existsDialog.setOnKeyListener(new OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+            	
+              return false;
+            }
+        });
+		showAlertDialog(existsDialog);
+	}
 	
 	private void showAlertDialog(AlertDialog.Builder dialog){
 		isShow = true;

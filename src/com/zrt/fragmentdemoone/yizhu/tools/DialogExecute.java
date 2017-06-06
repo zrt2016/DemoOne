@@ -1,5 +1,7 @@
 package com.zrt.fragmentdemoone.yizhu.tools;
 
+import java.util.List;
+
 import com.zrt.fragmentdemoone.yizhu.YiZhuInfo;
 
 public interface DialogExecute {
@@ -17,7 +19,16 @@ public interface DialogExecute {
 	 */
 	public void executeOtherOperation(YiZhuInfo yiZhuInfo, String op_type, int insert_type);
 	
-	
+	/**
+	 * 其他操作：插入备注值
+	 * @param yiZhuInfo
+	 * @param op_type
+	 * @param insert_type
+	 * @param beizhu
+	 */
 	public void executeInputOtherValue(YiZhuInfo yiZhuInfo, String op_type, int insert_type, String beizhu);
+	
+	
+	public boolean executeExistsStartYiZhu(List<YiZhuInfo> zhiXingList, int insert_type);
 	
 }

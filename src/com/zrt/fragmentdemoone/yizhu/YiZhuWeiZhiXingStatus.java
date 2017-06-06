@@ -5,10 +5,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.zrt.fragmentdemoone.yizhu.tools.AlertDialogTools;
+import com.zrt.fragmentdemoone.yizhu.tools.DialogExecute;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
+import android.widget.Toast;
 
 /**
  * 已校对模块
@@ -18,11 +22,12 @@ import android.util.Log;
  * @author zrt
  *
  */
-public class YiZhuWeiZhiXingStatus extends YiZhuStatusBasic{
+public class YiZhuWeiZhiXingStatus extends YiZhuStatusBasic implements DialogExecute{
 	
 	public final String dangqian_zhixing_state = "开始执行";
+	public final String zhiXing_over = "执行完毕";
 	public String yongfa_type = "全部";
-	public List<YiZhuInfo> zhiXingList = new ArrayList<YiZhuInfo>();
+//	public List<YiZhuInfo> zhiXingList = new ArrayList<YiZhuInfo>();
 	public Context context;
 
 	public YiZhuWeiZhiXingStatus(String yizhu_type,Context context) {
@@ -122,33 +127,18 @@ public class YiZhuWeiZhiXingStatus extends YiZhuStatusBasic{
 		yiZhuInfo.setJiaodui_history(jiaodui_lishi_new.toString());
 	}
 	
-	/**
-	 * 开始执行
-	 * @param yiZhuInfo 
-	 * @param insert_type
-	 */
-	private void yiZhuBeginExecute(YiZhuInfo yiZhuInfo, int insert_type) {
-		// TODO Auto-generated method stub
-		String history_id = UUID.randomUUID().toString();
-		int dangqian_cishu = getDangqianWanchengCishu(yiZhuInfo.getWancheng_cishu(), yiZhuInfo.getMeiri_cishu(), "");
-		int hedui_cishu = getCalcHeduiCishu(yiZhuInfo.getZuhao(), dangqian_zhixing_state, dangqian_cishu);
-		String other_info = mapScan.get(yiZhuInfo.getZuhao());
-		executeDB(getUpdateBeginSQLite(yiZhuInfo, dangqian_zhixing_state));
-		executeDB(getInsertHistorySQLite(yiZhuInfo, dangqian_zhixing_state, dangqian_zhixing_state, history_id, dangqian_cishu, hedui_cishu, other_info, insert_type, ""));
-		executeDB(getInsertHistoryLiShiSQLite(yiZhuInfo, dangqian_zhixing_state, dangqian_zhixing_state, history_id, dangqian_cishu, hedui_cishu, other_info, insert_type, ""));
-	}
 	
 	/**
 	 * 查询是否存在正在执行的输液医嘱
 	 * @param yiZhuInfo
 	 * @return
 	 */
-	public boolean checkDuoDaiShuYeQuery(YiZhuInfo yiZhuInfo){
+	public boolean checkDuoDaiShuYeQuery(YiZhuInfo yiZhuInfo, int insert_type){
 		if (!current_application.yizhu_duodai_shuye_tixing){
 			return false;
 		}
-		
-		zhiXingList.clear();
+		List<YiZhuInfo> zhiXingList = new ArrayList<YiZhuInfo>();
+//		zhiXingList.clear();
 		StringBuilder zuHaoSQLite = new StringBuilder();
 //		strOther = "SELECT * FROM yizhu_info WHERE zhuyuan_id = '" + this.current_application.current_patient_zhuyuan_id + 
 //				"' and zuhao != '" + zuhao + "' and (zhixing_state = '开始执行' or zhixing_state = '暂停执行') and yongfa_type = '输液' GROUP BY zuhao ";
@@ -195,7 +185,8 @@ public class YiZhuWeiZhiXingStatus extends YiZhuStatusBasic{
 			zhiXingList.add(yizhu);
 		}
 		releaseCursor(zuHaoCursor);
-		duoDaiShuYeExecute(yiZhuInfo);
+		AlertDialogTools.getInstance(current_application).existsStartShuYeDialog(this, zhiXingList, yiZhuInfo, insert_type);
+//		duoDaiShuYeExecute(yiZhuInfo);
 		return true;
 	}
 	
@@ -203,21 +194,26 @@ public class YiZhuWeiZhiXingStatus extends YiZhuStatusBasic{
 	 * 选择需要结束的正在执行的输液医嘱
 	 * @param yiZhuInfo
 	 */
-	private void duoDaiShuYeExecute(YiZhuInfo yiZhuInfo) {
-		// TODO Auto-generated method stub
-		AlertDialog.Builder dialog = new AlertDialog.Builder(this.context);
-//		dialog.setMultiChoiceItems(items, checkedItems, listener)
-		dialog.show();
-	}
+//	private void duoDaiShuYeExecute(YiZhuInfo yiZhuInfo) {
+//		// TODO Auto-generated method stub
+//		AlertDialog.Builder dialog = new AlertDialog.Builder(this.context);
+////		dialog.setMultiChoiceItems(items, checkedItems, listener)
+//		dialog.show();
+//	}
 	
 	/**
-	 * 结束已选择的正在执行的医嘱
+	 * 
+	 * @param zhiXingList 处于开始执行状态未执行完毕的输液医嘱
 	 * @param insert_type
+	 * @return true 表示选中了最少一条医嘱可执行
+	 *		   false 表示未选中任何医嘱
 	 */
-	private void yiZhuDuoDaiFinish(int insert_type){
+	private boolean yiZhuDuoDaiFinish(List<YiZhuInfo> zhiXingList, int insert_type){
+		boolean state = true;
 		for (int x=0; x<zhiXingList.size(); x++){
 			YiZhuInfo yiZhuInfo = zhiXingList.get(x);
 			if (yiZhuInfo.isOperation_state()){
+				state = false;
 				int dangqian_cishu = getDangqianWanchengCishu(yiZhuInfo.getWancheng_cishu(), yiZhuInfo.getMeiri_cishu(), "");
 				int hedui_cishu = getCalcHeduiCishu(yiZhuInfo.getZuhao(), dangqian_zhixing_state, dangqian_cishu);
 				String history_id = UUID.randomUUID().toString();
@@ -226,6 +222,11 @@ public class YiZhuWeiZhiXingStatus extends YiZhuStatusBasic{
 				executeDB(getInsertHistoryLiShiSQLite(yiZhuInfo, dangqian_zhixing_state, dangqian_zhixing_state, history_id, dangqian_cishu, hedui_cishu, "", insert_type, ""));
 			}
 		}
+		if (state) {
+			Toast.makeText(context, "请至少选择一条正在执行的医嘱", Toast.LENGTH_SHORT).show();
+			return false;
+		}
+		return true;
 	}
 	
 	
@@ -242,6 +243,48 @@ public class YiZhuWeiZhiXingStatus extends YiZhuStatusBasic{
 		executeDB(getUpdateCompletedSQLite(yiZhuInfo));
 		executeDB(getInsertHistorySQLite(yiZhuInfo, dangqian_zhixing_state, dangqian_zhixing_state, history_id_two, dangqian_cishu, hedui_cishu, "", insert_type, ""));
 		executeDB(getInsertHistoryLiShiSQLite(yiZhuInfo, dangqian_zhixing_state, dangqian_zhixing_state, history_id_two, dangqian_cishu, hedui_cishu, "", insert_type, ""));
+	}
+
+	@Override
+	public void executeYiZhu(YiZhuInfo yiZhuInfo, String state, int insert_type) {
+		// TODO 开始执行
+		if (state.equals(dangqian_zhixing_state)){
+			yiZhuCompleteExecute(yiZhuInfo, dangqian_zhixing_state, insert_type);
+			return;
+		}
+		if (state.equals(zhiXing_over)){
+			yiZhuCompleteExecute(yiZhuInfo, zhiXing_over, insert_type);
+		}
+		
+	}
+
+	@Override
+	public void otherOperation(YiZhuInfo yiZhuInfo, String state, int insert_type) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void cancel(String state) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void executeOtherOperation(YiZhuInfo yiZhuInfo, String op_type, int insert_type) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void executeInputOtherValue(YiZhuInfo yiZhuInfo, String op_type, int insert_type, String beizhu) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean executeExistsStartYiZhu(List<YiZhuInfo> zhiXingList, int insert_type) {
+		return yiZhuDuoDaiFinish(zhiXingList, insert_type);
 	}
 
 }

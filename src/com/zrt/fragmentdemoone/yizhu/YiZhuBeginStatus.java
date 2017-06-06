@@ -113,20 +113,6 @@ public class YiZhuBeginStatus extends YiZhuStatusBasic implements DialogExecute{
 	}
 	
 	/**
-	 * 状态：执行完毕
-	 * @param yiZhuInfo
-	 * @param insert_type
-	 */
-	private void yiZhuCompleteExecute(YiZhuInfo yiZhuInfo, int insert_type) {
-		int dangqian_cishu = getDangqianWanchengCishu(yiZhuInfo.getWancheng_cishu(), yiZhuInfo.getMeiri_cishu(), "");
-		int hedui_cishu = getCalcHeduiCishu(yiZhuInfo.getZuhao(), dangqian_zhixing_state, dangqian_cishu);
-		String history_id = UUID.randomUUID().toString();
-		executeDB(getUpdateCompletedSQLite(yiZhuInfo));
-		executeDB(getInsertHistorySQLite(yiZhuInfo, dangqian_zhixing_state, dangqian_zhixing_state, history_id, dangqian_cishu, hedui_cishu, "", insert_type, ""));
-		executeDB(getInsertHistoryLiShiSQLite(yiZhuInfo, dangqian_zhixing_state, dangqian_zhixing_state, history_id, dangqian_cishu, hedui_cishu, "", insert_type, ""));
-	}
-	
-	/**
 	 * 状态：其他操作
 	 * @param yiZhuInfo
 	 * @param insert_type
@@ -143,10 +129,10 @@ public class YiZhuBeginStatus extends YiZhuStatusBasic implements DialogExecute{
 
 	@Override
 	public void executeYiZhu(YiZhuInfo yiZhuInfo, String state, int insert_type) {
-		// TODO 开始执行
+		// TODO 执行完毕
 		AlertDialogTools.getInstance(current_application).dismisAlertDialog();
 		if (state.equals(dangqian_zhixing_state)){
-			yiZhuCompleteExecute(yiZhuInfo, insert_type);
+			yiZhuCompleteExecute(yiZhuInfo, dangqian_zhixing_state, insert_type);
 			return;
 		}
 		
@@ -180,7 +166,7 @@ public class YiZhuBeginStatus extends YiZhuStatusBasic implements DialogExecute{
 	public void executeOtherOperation(YiZhuInfo yiZhuInfo, String op_type, int insert_type) {
 		// TODO Auto-generated method stub
 		if (op_type.equals("录入滴速")){
-			AlertDialogTools.getInstance(current_application).otherInputDiSu(this, yiZhuInfo, op_type, insert_type);
+			AlertDialogTools.getInstance(current_application).otherInputDiSuDialog(this, yiZhuInfo, op_type, insert_type);
 			return;
 		}
 		if (op_type.equals("药物反应")){
@@ -198,6 +184,12 @@ public class YiZhuBeginStatus extends YiZhuStatusBasic implements DialogExecute{
 	public void executeInputOtherValue(YiZhuInfo yiZhuInfo, String op_type, int insert_type, String beizhu) {
 		// TODO Auto-generated method stub
 		insertOtherOpteration(yiZhuInfo, op_type, insert_type, beizhu);
+	}
+	
+	@Override
+	public boolean executeExistsStartYiZhu(List<YiZhuInfo> zhiXingList, int insert_type) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
 	/**
