@@ -289,6 +289,32 @@ public class AlertDialogTools {
 		showAlertDialog(existsDialog);
 	}
 	
+	/**
+	 * 警告提醒框
+	 * @param title 标题
+	 * @param message 提示内容
+	 * @param icon 图片
+	 */
+	public void promptWarningDialog(String title, String message, int icon){
+		AlertDialog.Builder localBuilder2 = new AlertDialog.Builder(context);
+        localBuilder2.setTitle(title);
+        localBuilder2.setMessage(message);
+        localBuilder2.setIcon(icon);
+        localBuilder2.setOnKeyListener(new OnKeyListener() {
+              @Override
+              public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+              	if(isShow){
+              		if((keyCode == KeyEvent.KEYCODE_F11 || keyCode == KeyEvent.KEYCODE_F12|| keyCode == 140) && event.getRepeatCount()==0)
+	                    {
+	                        dismisAlertDialog();
+	                    }
+              	}
+                  return false;
+              }
+          });
+       showAlertDialog(localBuilder2);
+	}
+	
 	private void showAlertDialog(AlertDialog.Builder dialog){
 		isShow = true;
 		switchDialog = true;

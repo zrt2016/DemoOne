@@ -7,6 +7,7 @@ import com.zrt.fragmentdemoone.yizhu.tools.AlertDialogTools;
 import com.zrt.fragmentdemoone.yizhu.tools.DialogExecute;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 
@@ -20,9 +21,9 @@ public class YiZhuBeginStatus extends YiZhuStatusBasic implements DialogExecute{
 	public final String zanting_zhixing = "暂停执行";
 	public final String other_operation = "其他操作";
 	public final String cancel = "取消";
-
+	public String yongfa_type = "全部";
 	public YiZhuBeginStatus(String yizhu_type) {
-		// TODO Auto-generated constructor stub
+		this.yongfa_type = yizhu_type;
 	}
 
 	@Override
@@ -51,7 +52,7 @@ public class YiZhuBeginStatus extends YiZhuStatusBasic implements DialogExecute{
 		// TODO Auto-generated method stub
 		Log.i(">>>>", "##"+object.toString()+"="+this.getClass().getName());
 		YiZhuInfo yiZhuInfo = (YiZhuInfo) object;
-		AlertDialogTools.getInstance(current_application).contentDialogThree(this, yiZhuInfo, insert_type, dangqian_zhixing_state, other_operation, cancel);
+		AlertDialogTools.getInstance(context).contentDialogThree(this, yiZhuInfo, insert_type, dangqian_zhixing_state, other_operation, cancel);
 	}
 
 	@Override

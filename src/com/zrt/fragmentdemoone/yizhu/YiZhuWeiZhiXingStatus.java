@@ -28,11 +28,10 @@ public class YiZhuWeiZhiXingStatus extends YiZhuStatusBasic implements DialogExe
 	public final String zhiXing_over = "执行完毕";
 	public String yongfa_type = "全部";
 //	public List<YiZhuInfo> zhiXingList = new ArrayList<YiZhuInfo>();
-	public Context context;
+	
 
-	public YiZhuWeiZhiXingStatus(String yizhu_type,Context context) {
+	public YiZhuWeiZhiXingStatus(String yizhu_type) {
 		this.yongfa_type = yizhu_type;
-		this.context = context;
 	}
 
 	@Override
@@ -185,7 +184,7 @@ public class YiZhuWeiZhiXingStatus extends YiZhuStatusBasic implements DialogExe
 			zhiXingList.add(yizhu);
 		}
 		releaseCursor(zuHaoCursor);
-		AlertDialogTools.getInstance(current_application).existsStartShuYeDialog(this, zhiXingList, yiZhuInfo, insert_type);
+		AlertDialogTools.getInstance(context).existsStartShuYeDialog(this, zhiXingList, yiZhuInfo, insert_type);
 //		duoDaiShuYeExecute(yiZhuInfo);
 		return true;
 	}
