@@ -438,13 +438,13 @@ public abstract class YiZhuStatusBasic {
 		  }
 		  if(null != yiZhuInfo.getYongfa() && !"".equals(yiZhuInfo.getYongfa()) && (!"".equals(current_application.yizhu_bu_yan_zheng_shijiangange_type)) ){
 			  String arr[] = current_application.yizhu_bu_yan_zheng_shijiangange_type.split("\\|");
-				boolean bu_yan_zheng = false;
-				for(int i=0; i<arr.length; i++){
-					if(yiZhuInfo.getYongfa().contains(arr[i])){
-						bu_yan_zheng = true;
-						break;
-					}
-				}
+			  boolean bu_yan_zheng = false;
+			  for(int i=0; i<arr.length; i++){
+				  if(yiZhuInfo.getYongfa().contains(arr[i])){
+					  bu_yan_zheng = true;
+					  break;
+				  }
+			  }
 			  if(bu_yan_zheng){
 				  return true;
 			  }
@@ -474,12 +474,18 @@ public abstract class YiZhuStatusBasic {
 		              long l4 = shijian_jiange - l3;
 		              int k = (int)(l4 / 60000L);
 		              int m = (int)(l4 - 60000 * k) / 1000;
-		              String str4 = "请再继续等待";
-		              if (k != 0)
-		                str4 = str4 + k + "分";
-		              String str5 = str4 + m + "秒";
-		              String message = "该医嘱执行时间未超过" + shijian_jiange / 60000L + "分钟, " + str5;
-		              AlertDialogTools.getInstance(context).promptWarningDialog("警告", message, R.drawable.ic_logo);
+		              StringBuilder message = new StringBuilder();
+		              message.append("该医嘱执行时间未超过").append(shijian_jiange / 60000L).append("分钟, ").append("请再继续等待");
+		              if (k != 0){
+		            	  message.append(k).append("分");
+		              }
+		              message.append(m).append("秒");
+//		              String str4 = "";
+//		              if (k != 0)
+//		                str4 = str4 + k + "分";
+//		              String str5 = str4 + m + "秒";
+//		              String message = "" + shijian_jiange / 60000L + "" + str5;
+		              AlertDialogTools.getInstance(context).promptWarningDialog("警告", message.toString(), R.drawable.ic_logo);
 //		              warnAlertState = true;
 //		              dialogTips.put(this, localAlertDialog);
 		              return false;
