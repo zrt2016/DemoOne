@@ -29,38 +29,67 @@ public class AlertDialogTools {
 	
 	public static AlertDialogTools dialogTools;
 	
-	private boolean isShow = false;
+	private static boolean isShow = false;
 
-	public AlertDialog alertDialog;
+	public static AlertDialog alertDialog;
 	
-	public Context context;
+//	public Context context;
 	
 	/** 其他操作中记录选择项 */
-	public String selectOtherItem;
+	public static String selectOtherItem;
 	
 	/** 是否可关闭dialog */
-	public boolean switchDialog = true;
+	public static boolean switchDialog = true;
 	
-	/**
-	 * 多袋输液全选按钮点击记录
-	 */
+//	/**
+//	 * 多袋输液全选按钮点击记录
+//	 */
 //	private boolean duoDaiShuYeQuanXuan;
 	
-	public AlertDialogTools(Context context) {
-		// TODO Auto-generated constructor stub
-		this.context = context;
-	}
+//	public AlertDialogTools(Context context) {
+//		// TODO Auto-generated constructor stub
+//		this.context = context;
+//	}
 	
-	public static AlertDialogTools getInstance(Context context){
-		if (null == dialogTools){
-			dialogTools = new AlertDialogTools(context);
+//	public static AlertDialogTools getInstance(Context context){
+//		if (null == dialogTools){
+//			dialogTools = new AlertDialogTools(context);
+//		}
+//		return dialogTools;
+//	}
+	
+	public static void contentDialogTwo(Context context, final DialogExecute dialogExecute, final YiZhuInfo yiZhuInfo, final int insert_type,final String... selectTag){
+		if (selectTag.length == 2){
+			AlertDialog.Builder dialog = new AlertDialog.Builder(context);
+			//TODO 医嘱内容
+			dialog.setTitle("医嘱执行");
+			dialog.setPositiveButton(selectTag[0], new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					// TODO Auto-generated method stub
+					dialogExecute.executeYiZhu(yiZhuInfo, selectTag[0], insert_type);
+					dismisAlertDialog();
+				}
+			});
+			dialog.setNegativeButton(selectTag[1], new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					// TODO Auto-generated method stub
+					dialogExecute.cancel(selectTag[2]);
+					dismisAlertDialog();
+				}
+			});
+			showAlertDialog(dialog);
+			return;
 		}
-		return dialogTools;
 	}
 	
-	public void contentDialogThree(final DialogExecute dialogExecute, final YiZhuInfo yiZhuInfo, final int insert_type,final String... selectTag){
+	public static void contentDialogThree(Context context, final DialogExecute dialogExecute, final YiZhuInfo yiZhuInfo, final int insert_type,final String... selectTag){
 		if (selectTag.length == 3){
 			AlertDialog.Builder dialog = new AlertDialog.Builder(context);
+			//TODO 医嘱内容
 			dialog.setTitle("医嘱执行");
 			dialog.setPositiveButton(selectTag[0], new DialogInterface.OnClickListener() {
 				
@@ -101,7 +130,7 @@ public class AlertDialogTools {
 	 * @param insert_type
 	 * @param itemOperation
 	 */
-	public void otherOperationDialog(final DialogExecute dialogExecute, final YiZhuInfo yiZhuInfo, final int insert_type, final String[] itemOperation){
+	public static void otherOperationDialog(Context context, final DialogExecute dialogExecute, final YiZhuInfo yiZhuInfo, final int insert_type, final String[] itemOperation){
 		AlertDialog.Builder dialog = new AlertDialog.Builder(context);
 		dialog.setTitle("医嘱执行");
 		selectOtherItem = itemOperation[0];
@@ -140,7 +169,7 @@ public class AlertDialogTools {
 	 * @param op_type
 	 * @param insert_type
 	 */
-	public void otherInputDiSuDialog(final DialogExecute dialogExecute, final YiZhuInfo yiZhuInfo, final String op_type, final int insert_type){
+	public static void otherInputDiSuDialog(final Context context, final DialogExecute dialogExecute, final YiZhuInfo yiZhuInfo, final String op_type, final int insert_type){
 		AlertDialog.Builder dialog = new AlertDialog.Builder(context);
 		View inputDiSuViwe = LayoutInflater.from(context).inflate(R.layout.yizhu_luru_disu_dialog, null);
 		TextView tv_Title = (TextView) inputDiSuViwe.findViewById(R.id.dialog_title);
@@ -192,15 +221,23 @@ public class AlertDialogTools {
 		showAlertDialog(dialog);
 	}
 	
-	public void existsStartShuYeDialog(final DialogExecute dialogExecute,final List<YiZhuInfo> zhiXingList, final YiZhuInfo yiZhuInfo,final int insert_type){
-		final AlertDialog.Builder existsDialog = new AlertDialog.Builder(this.context);
+	/**
+	 * 多袋输液医嘱选择
+	 * @param context
+	 * @param dialogExecute
+	 * @param zhiXingList
+	 * @param yiZhuInfo
+	 * @param insert_type
+	 */
+	public static void existsStartShuYeDialog(Context context, final DialogExecute dialogExecute,final List<YiZhuInfo> zhiXingList, final YiZhuInfo yiZhuInfo,final int insert_type){
+		final AlertDialog.Builder existsDialog = new AlertDialog.Builder(context);
 //		adb.setIcon(R.drawable.ic_logo);
 //		adb.setTitle("存在"+this.zhiXingList.size()+"条医嘱未执行完毕\n请选择要结束的医嘱");
-		View existView = LayoutInflater.from(this.context).inflate(R.layout.custom_alertdialog_listview, null);
+		View existView = LayoutInflater.from(context).inflate(R.layout.custom_alertdialog_listview, null);
 		((TextView) existView.findViewById(R.id.custom_dialog_title)).setText("存在"+zhiXingList.size()+"条医嘱未执行完毕\n请选择要结束的医嘱");
 		final CheckBox cb = (CheckBox) existView.findViewById(R.id.custom_dialog_quanxuan);
 		final ListView lv = (ListView) existView.findViewById(R.id.custom_dialog_lv);
-		final DialogAdapter adapter = new DialogAdapter(this.context, zhiXingList);
+		final DialogAdapter adapter = new DialogAdapter(context, zhiXingList);
 		lv.setAdapter(adapter);
 		existsDialog.setView(existView);
 		lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -295,7 +332,7 @@ public class AlertDialogTools {
 	 * @param message 提示内容
 	 * @param icon 图片
 	 */
-	public void promptWarningDialog(String title, String message, int icon){
+	public static void promptWarningDialog(Context context, String title, String message, int icon){
 		AlertDialog.Builder localBuilder2 = new AlertDialog.Builder(context);
         localBuilder2.setTitle(title);
         localBuilder2.setMessage(message);
@@ -315,13 +352,13 @@ public class AlertDialogTools {
        showAlertDialog(localBuilder2);
 	}
 	
-	private void showAlertDialog(AlertDialog.Builder dialog){
+	private static void showAlertDialog(AlertDialog.Builder dialog){
 		isShow = true;
 		switchDialog = true;
 		alertDialog = dialog.show();
 	}
 	
-	public void dismisAlertDialog(){
+	public static  void dismisAlertDialog(){
 		isShow = false;
 		if (null != alertDialog && alertDialog.isShowing()){
 			alertDialog.dismiss();
@@ -334,7 +371,7 @@ public class AlertDialogTools {
 	 * @param paramAnonymous2DialogInterface
 	 * @param state true 可关闭； false 不可关闭
 	 */
-	public void switchAlertDialog(DialogInterface dialogInterface, boolean state){
+	public static void switchAlertDialog(DialogInterface dialogInterface, boolean state){
 		switchDialog = state;
 		// 条件不成立不能关闭 AlertDialog 窗口
 		try 

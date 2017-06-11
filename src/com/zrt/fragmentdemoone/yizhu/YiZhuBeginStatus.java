@@ -52,16 +52,12 @@ public class YiZhuBeginStatus extends YiZhuStatusBasic implements DialogExecute{
 		// TODO Auto-generated method stub
 		Log.i(">>>>", "##"+object.toString()+"="+this.getClass().getName());
 		YiZhuInfo yiZhuInfo = (YiZhuInfo) object;
-		AlertDialogTools.getInstance(context).contentDialogThree(this, yiZhuInfo, insert_type, dangqian_zhixing_state, other_operation, cancel);
+		AlertDialogTools.contentDialogThree(context, this, yiZhuInfo, insert_type, dangqian_zhixing_state, other_operation, cancel);
 	}
 
 	@Override
-	public void setYiZhuType(String yizhu_type, boolean isUpdate) {
-		this.yizhu_type = yizhu_type;
-		// TODO  是否刷新医嘱界面
-		if (isUpdate){
-			
-		}
+	public void setYiZhuType(String yizhu_type) {
+		this.yongfa_type = yizhu_type;
 	}
 
 	@Override
@@ -124,14 +120,14 @@ public class YiZhuBeginStatus extends YiZhuStatusBasic implements DialogExecute{
 		if(null == itemOperation || itemOperation.length ==0){
 			itemOperation = new String[]{ "暂停", "穿刺", "录入滴速", "药物反应", "巡视", "拔针", "接液" ,"其它"};
 		}
-		AlertDialogTools.getInstance(current_application).otherOperationDialog(this, yiZhuInfo, insert_type, itemOperation); 
+		AlertDialogTools.otherOperationDialog(context, this, yiZhuInfo, insert_type, itemOperation); 
 	}
 	
 
 	@Override
 	public void executeYiZhu(YiZhuInfo yiZhuInfo, String state, int insert_type) {
 		// TODO 执行完毕
-		AlertDialogTools.getInstance(current_application).dismisAlertDialog();
+//		AlertDialogTools.dismisAlertDialog();
 		if (state.equals(dangqian_zhixing_state)){
 			yiZhuCompleteExecute(yiZhuInfo, dangqian_zhixing_state, insert_type);
 			return;
@@ -167,7 +163,7 @@ public class YiZhuBeginStatus extends YiZhuStatusBasic implements DialogExecute{
 	public void executeOtherOperation(YiZhuInfo yiZhuInfo, String op_type, int insert_type) {
 		// TODO Auto-generated method stub
 		if (op_type.equals("录入滴速")){
-			AlertDialogTools.getInstance(current_application).otherInputDiSuDialog(this, yiZhuInfo, op_type, insert_type);
+			AlertDialogTools.otherInputDiSuDialog(context, this, yiZhuInfo, op_type, insert_type);
 			return;
 		}
 		if (op_type.equals("药物反应")){

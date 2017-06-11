@@ -26,7 +26,7 @@ public class YiZhuWeiZhiXingStatus extends YiZhuStatusBasic implements DialogExe
 	
 	public final String dangqian_zhixing_state = "开始执行";
 	public final String zhiXing_over = "执行完毕";
-	public String yongfa_type = "全部";
+//	public String yongfa_type = "全部";
 //	public List<YiZhuInfo> zhiXingList = new ArrayList<YiZhuInfo>();
 	
 
@@ -80,12 +80,8 @@ public class YiZhuWeiZhiXingStatus extends YiZhuStatusBasic implements DialogExe
 	}
 
 	@Override
-	public void setYiZhuType(String yizhu_type, boolean isUpdate) {
-		this.yizhu_type = yizhu_type;
-		// TODO  是否刷新医嘱界面
-		if (isUpdate){
-			
-		}
+	public void setYiZhuType(String yizhu_type) {
+		this.yongfa_type = yizhu_type;
 	}
 
 	@Override
@@ -184,7 +180,7 @@ public class YiZhuWeiZhiXingStatus extends YiZhuStatusBasic implements DialogExe
 			zhiXingList.add(yizhu);
 		}
 		releaseCursor(zuHaoCursor);
-		AlertDialogTools.getInstance(context).existsStartShuYeDialog(this, zhiXingList, yiZhuInfo, insert_type);
+		AlertDialogTools.existsStartShuYeDialog(context, this, zhiXingList, yiZhuInfo, insert_type);
 //		duoDaiShuYeExecute(yiZhuInfo);
 		return true;
 	}

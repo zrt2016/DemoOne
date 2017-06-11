@@ -17,7 +17,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 public abstract class YiZhuStatusBasic {
-	public String yizhu_type = "全部";
+	public static String HANDLER_STOP_YIZHU_TAG_NAME = "拒绝执行";
+	public String yongfa_type = "全部";
 	public SQLiteDatabase db;
 	
 	public Context context;
@@ -44,7 +45,7 @@ public abstract class YiZhuStatusBasic {
 	 * @param yizhu_type 医嘱类型
 	 * @param isUpdate 是否刷新医嘱
 	 */
-	public abstract void setYiZhuType(String yizhu_type, boolean isUpdate);
+	public abstract void setYiZhuType(String yizhu_type);
 	
 	public void setCurrent_application(GlobalInfoApplication current_application) {
 		this.current_application = current_application;
@@ -96,6 +97,11 @@ public abstract class YiZhuStatusBasic {
 	 */
 	public abstract void getYiZhuStateRecord(YiZhuInfo yiZhuInfo);
 	
+	/**
+	 * 获取医嘱数据
+	 * @param yizhu_sqlite
+	 * @return
+	 */
 	public List<YiZhuInfo> getData(String yizhu_sqlite){
 		List<YiZhuInfo> list = new ArrayList<>();
 		Cursor zuhaoCursor = null;
@@ -432,69 +438,163 @@ public abstract class YiZhuStatusBasic {
 	/**
 	   * 判断时间间隔（输液类开始执行到结束执行中间必须有三分钟时间）
 	   */
-	  public boolean panduanShijianJiange(YiZhuInfo yiZhuInfo, String status, int dangqian_cishu){
-		  if(!current_application.shuye_yizhu_kaishi_jieshu_shijian_jiange_kaiguan){
-			  return true;
-		  }
-		  if(null != yiZhuInfo.getYongfa() && !"".equals(yiZhuInfo.getYongfa()) && (!"".equals(current_application.yizhu_bu_yan_zheng_shijiangange_type)) ){
-			  String arr[] = current_application.yizhu_bu_yan_zheng_shijiangange_type.split("\\|");
-			  boolean bu_yan_zheng = false;
-			  for(int i=0; i<arr.length; i++){
-				  if(yiZhuInfo.getYongfa().contains(arr[i])){
-					  bu_yan_zheng = true;
-					  break;
-				  }
-			  }
-			  if(bu_yan_zheng){
-				  return true;
-			  }
-		  }
+	public boolean panduanShijianJiange(YiZhuInfo yiZhuInfo, String status, int dangqian_cishu){
+		if(!current_application.shuye_yizhu_kaishi_jieshu_shijian_jiange_kaiguan){
+			return true;
+		}
+		if(null != yiZhuInfo.getYongfa() && !"".equals(yiZhuInfo.getYongfa()) && (!"".equals(current_application.yizhu_bu_yan_zheng_shijiangange_type)) ){
+			String arr[] = current_application.yizhu_bu_yan_zheng_shijiangange_type.split("\\|");
+			boolean bu_yan_zheng = false;
+			for(int i=0; i<arr.length; i++){
+				if(yiZhuInfo.getYongfa().contains(arr[i])){
+					bu_yan_zheng = true;
+					break;
+				}
+			}
+			if(bu_yan_zheng){
+				return true;
+			}
+		}
 		  
 		//开始执行
-	    if (status.equals("开始执行") || status.equalsIgnoreCase("暂停执行") || status.equalsIgnoreCase("执行完毕"))
-	      {
-		    	String zhixing_time = "";
-		    	String str10 = "SELECT zhixing_time FROM yizhu_zhixing_history_lishi WHERE zhixing_zuhao = '" + yiZhuInfo.getZuhao() + "' and yizhu_shuxing = '0' and zhixing_state = '开始执行' and dangqian_cishu = '"+dangqian_cishu+"' and op_type = '开始执行' ORDER BY real_time DESC limit 1 ";
-		        Cursor localCursor6 = db.rawQuery(str10, new String[0]);
-		        while (localCursor6.moveToNext()) {
-		        	zhixing_time = localCursor6.getString(localCursor6.getColumnIndex("zhixing_time"));
-		        }
-		        localCursor6.close();
-//		  	    if(!compareDate(zhixing_time)){
-				try {
-					long l3 = System.currentTimeMillis() - new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(zhixing_time).getTime();
-					long shijian_jiange = 0L;
-					if (yiZhuInfo.getYongfa_type().equals("皮试")){
-						shijian_jiange = current_application.pishi_yizhu_shijian_jiange;
-					}else {
-						shijian_jiange = current_application.zhixing_wanbi_shijian_jiange;
-					}
-					if (l3 < shijian_jiange)
-		            {
-		              long l4 = shijian_jiange - l3;
-		              int k = (int)(l4 / 60000L);
-		              int m = (int)(l4 - 60000 * k) / 1000;
-		              StringBuilder message = new StringBuilder();
-		              message.append("该医嘱执行时间未超过").append(shijian_jiange / 60000L).append("分钟, ").append("请再继续等待");
-		              if (k != 0){
-		            	  message.append(k).append("分");
-		              }
-		              message.append(m).append("秒");
-//		              String str4 = "";
-//		              if (k != 0)
-//		                str4 = str4 + k + "分";
-//		              String str5 = str4 + m + "秒";
-//		              String message = "" + shijian_jiange / 60000L + "" + str5;
-		              AlertDialogTools.getInstance(context).promptWarningDialog("警告", message.toString(), R.drawable.ic_logo);
-//		              warnAlertState = true;
-//		              dialogTips.put(this, localAlertDialog);
-		              return false;
-		            }
-				} catch (ParseException e) {
-					e.printStackTrace();
+	    if (status.equals("开始执行") || status.equalsIgnoreCase("暂停执行") || status.equalsIgnoreCase("执行完毕")){
+	    	
+			String zhixing_time = "";
+			String str10 = "SELECT zhixing_time FROM yizhu_zhixing_history_lishi WHERE zhixing_zuhao = '" + yiZhuInfo.getZuhao() + "' and yizhu_shuxing = '0' and zhixing_state = '开始执行' and dangqian_cishu = '"+dangqian_cishu+"' and op_type = '开始执行' ORDER BY real_time DESC limit 1 ";
+			Cursor localCursor6 = db.rawQuery(str10, new String[0]);
+			while (localCursor6.moveToNext()) {
+				zhixing_time = localCursor6.getString(localCursor6.getColumnIndex("zhixing_time"));
+			}
+			localCursor6.close();
+			//		  	    if(!compareDate(zhixing_time)){
+			try {
+				long l3 = System.currentTimeMillis() - new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(zhixing_time).getTime();
+				long shijian_jiange = 0L;
+				if (yiZhuInfo.getYongfa_type().equals("皮试")){
+					shijian_jiange = current_application.pishi_yizhu_shijian_jiange;
+				}else {
+					shijian_jiange = current_application.zhixing_wanbi_shijian_jiange;
 				}
-//		  	  }
-	      }
+				if (l3 < shijian_jiange) {
+					long l4 = shijian_jiange - l3;
+					int k = (int)(l4 / 60000L);
+					int m = (int)(l4 - 60000 * k) / 1000;
+					StringBuilder message = new StringBuilder();
+					message.append("该医嘱执行时间未超过").append(shijian_jiange / 60000L).append("分钟, ").append("请再继续等待");
+					if (k != 0){
+						message.append(k).append("分");
+					}
+					message.append(m).append("秒");
+					AlertDialogTools.promptWarningDialog(context, "警告", message.toString(), R.drawable.ic_logo);
+					return false;
+			    }
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+	    }
 	    return true;
-	  }
+	}
+	  
+	/**
+	 * 
+	 * @param zuhao
+	 * @return 如果返回结果为null, 则表明该组号无法执.
+	 */
+	public YiZhuInfo checkYiZhu(String zuhao){
+		StringBuilder yiZhuSQLite = new StringBuilder();
+		yiZhuSQLite.append("select * from yizhu_info where zuhao = '")
+				   .append(zuhao)
+		  		   .append("' or beizhu like '%")
+		  		   .append(zuhao)
+		  		   .append("%' ");
+		Cursor yiZhuCursor = db.rawQuery(yiZhuSQLite.toString(), new String[0]);
+		if(yiZhuCursor.getCount() == 0){
+			releaseCursor(yiZhuCursor);
+//			tipDialogWithError(this, "提示", "没有查到该医嘱，请核对！");
+			return null;
+		}
+		releaseCursor(yiZhuCursor);
+		
+		YiZhuInfo yiZhuInfo = new YiZhuInfo();
+		StringBuilder yiZhuCheckSQLite = new StringBuilder();
+		yiZhuCheckSQLite.append("SELECT * FROM yizhu_info WHERE zhuyuan_id = '")
+						.append(current_application.current_patient_zhuyuan_id)
+						.append("' and (zuhao = '")
+						.append(zuhao)
+						.append("'  or beizhu like '%")
+						.append(zuhao)
+						.append("%') GROUP BY zuhao ORDER BY yizhu_id ASC ");
+		Cursor isExistCursor = db.rawQuery(yiZhuCheckSQLite.toString(), new String[0]);
+		if(isExistCursor.getCount() == 0){
+			releaseCursor(isExistCursor);
+//	  		tipDialogWithError(this, "提示", "该条码不属于当前患者！");
+	  		return null;
+	  	}
+		while (isExistCursor.moveToNext()){
+			//获取医嘱数据
+			getYiZhuData(yiZhuInfo, isExistCursor);
+			break;
+		}
+		releaseCursor(isExistCursor);
+		
+		if (yiZhuInfo.getMeiri_cishu() == yiZhuInfo.getWancheng_cishu()){
+//			tipDialogWithError(this, "提示", "您所扫描的医嘱今日已经执行完毕");
+			return null;
+		}
+		
+		if(yiZhuInfo.getZhixing_state().equals(HANDLER_STOP_YIZHU_TAG_NAME)){
+//			tipDialog3(context, "提示", "您扫描的医嘱执行状态为" + yiZhuInfo.getZhixing_state() + "！","error");
+//			dangqian_type = yongfa_type;
+//	        dangqian_zhixing_state = "执行完毕";
+//	        YizhuZhixingWancheng(true);
+			return null;
+		}
+		if(current_application.yizhu_peiye_hedui_type.contains(yongfa_type)){
+			if("待配液".equalsIgnoreCase(yiZhuInfo.getZhixing_state())){
+//				tipDialogWithError(this, "提示", "您扫描到的医嘱当前状态为" + zhixing_state + "，请到配液核对界面扫描");
+				return null;
+			}
+			if ("已配液".equalsIgnoreCase(yiZhuInfo.getZhixing_state())) {
+//				tipDialogWithError(this, "提示", "您扫描到的医嘱当前状态为" + zhixing_state + "，请到配液核对界面扫描");
+				return null;
+			}
+		}
+		
+		//获取医嘱内容
+		yiZhuInfo.setYizhu_content_info(getYiZhuContent(yiZhuInfo.getZuhao()));
+		//获取操作历史 
+//		getYiZhuStateRecord(yiZhuInfo);
+		//获取配前核对历史
+		if (current_application.yizhu_peiye_hedui_type.contains(yiZhuInfo.getYongfa_type())){
+			yiZhuInfo.setYizhu_hedui_history(getPeiQianHeDuiHistory(yiZhuInfo.getZuhao()));
+		}
+		//查询该医嘱的所有操作历史
+		yiZhuInfo.setYizhu_qita_history(getZhiXingDetailed(yiZhuInfo.getZuhao()));
+		
+		return yiZhuInfo;
+	}
+	
+	/**
+	 * 
+	 * @param yiZhuInfo
+	 * @param insert_type
+	 */
+	public void yiZhuDialog(YiZhuInfo yiZhuInfo, int insert_type){
+//		YiZhuInfo yiZhuInfo = checkYiZhu(zuhao);
+		if (yiZhuInfo.getZhixing_state().equals(YiZhuManage.status_yiJiaoDui)){
+//			AlertDialogTools.contentDialogTwo(context, this, yiZhuInfo, insert_type, "开始执行", "取消");
+			return;
+		}
+		if (yiZhuInfo.getZhixing_state().equals(YiZhuManage.status_kaiShi)){
+//			AlertDialogTools.contentDialogThree(context, this, yiZhuInfo, insert_type, "执行完毕", "其他操作", "取消");
+			return;
+		}
+		if (yiZhuInfo.getZhixing_state().equals(YiZhuManage.status_zanTing)){
+//			AlertDialogTools.contentDialogThree(context, this, yiZhuInfo, insert_type, "执行完毕", "开始执行", "取消");
+			return;
+		}
+	}
+	  
+	  
+	  
 }
