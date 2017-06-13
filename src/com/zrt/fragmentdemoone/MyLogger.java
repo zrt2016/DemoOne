@@ -13,5 +13,11 @@ public class MyLogger {
 			Log.i(TAG, content);
 		}
 	}
+	
+	public static void e(String content){
+		if (flag){
+			Log.e(TAG, content);
+		}
+	}
 
 }
