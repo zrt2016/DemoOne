@@ -12,6 +12,9 @@ public class YiZhuManage {
 	public static final String status_zanTing = "暂停执行";
 	public static final String status_wanCheng = "执行完毕";
 	
+	public final int onTouch = 1;
+	public final int onScanBar = 1;
+	
 	
 	public YiZhuStatusBasic statusBasic;
 	private YiZhuStatusBasic status_daiPeiYe_basic;
@@ -67,13 +70,40 @@ public class YiZhuManage {
 //		statusBasic.getData(statusBasic.getSQLiteType(yizhu_type));
 	}
 	
+	public void yiZhuDialog(String zuhao){
+		if (null == statusBasic){
+			statusBasic = new YiZhuWeiPeiYeStatus();
+		}
+		YiZhuInfo yiZhuInfo = statusBasic.checkYiZhu(zuhao);
+		if (null == yiZhuInfo){
+			return;
+		}
+		if (yiZhuInfo.getZhixing_state().equals(status_yiJiaoDui)){
+			if (null == status_yiJiaoDui_Basic){
+				status_yiJiaoDui_Basic = new YiZhuWeiZhiXingStatus(yiZhuInfo.getYongfa_type());
+			}
+			statusBasic = status_yiJiaoDui_Basic;
+		}else if (yiZhuInfo.getZhixing_state().equals(status_kaiShi)){
+			if (null == status_kaiShi_Basic){
+				status_kaiShi_Basic = new YiZhuBeginStatus(yiZhuInfo.getYongfa_type());
+			}
+			statusBasic = status_kaiShi_Basic;
+		}else if (yiZhuInfo.getZhixing_state().equals(status_zanTing)){
+			if (null == status_zanTing_Basic){
+				status_zanTing_Basic = new YiZhuPauseStatus(yiZhuInfo.getYongfa_type());
+			}
+			statusBasic = status_zanTing_Basic;
+		}
+		statusBasic.yiZhuOpreationHistory(yiZhuInfo);
+		statusBasic.scanYiZhuExecute(yiZhuInfo, onScanBar);
+	}
 	
 	/**
 	 * 扫描
 	 * @param param
 	 */
 	public void sucessScanBar(String param){
-		  
+		
 	}
 	
 }

@@ -18,6 +18,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 public abstract class YiZhuStatusBasic {
 	public static String HANDLER_STOP_YIZHU_TAG_NAME = "拒绝执行";
+	public final String cancel = "取消";
 	public String yongfa_type = "全部";
 	public SQLiteDatabase db;
 	
@@ -46,6 +47,13 @@ public abstract class YiZhuStatusBasic {
 	 * @param isUpdate 是否刷新医嘱
 	 */
 	public abstract void setYiZhuType(String yizhu_type);
+	
+	/**
+	 * 扫描医嘱执行
+	 * @param yiZhuInfo
+	 * @param insert_type
+	 */
+	public abstract void scanYiZhuExecute(YiZhuInfo yiZhuInfo, int insert_type);
 	
 	public void setCurrent_application(GlobalInfoApplication current_application) {
 		this.current_application = current_application;
@@ -113,16 +121,17 @@ public abstract class YiZhuStatusBasic {
 //				yiZhuInfo.setZuhao(zuhao);
 				//获取医嘱数据
 				getYiZhuData(yiZhuInfo, zuhaoCursor);
-				//获取医嘱内容
-				yiZhuInfo.setYizhu_content_info(getYiZhuContent(yiZhuInfo.getZuhao()));
-				//获取操作历史 
-				getYiZhuStateRecord(yiZhuInfo);
-				//获取配前核对历史
-				if (current_application.yizhu_peiye_hedui_type.contains(yiZhuInfo.getYongfa_type())){
-					yiZhuInfo.setYizhu_hedui_history(getPeiQianHeDuiHistory(yiZhuInfo.getZuhao()));
-				}
-				//查询该医嘱的所有操作历史
-				yiZhuInfo.setYizhu_qita_history(getZhiXingDetailed(yiZhuInfo.getZuhao()));
+				yiZhuOpreationHistory(yiZhuInfo);
+//				//获取医嘱内容
+//				yiZhuInfo.setYizhu_content_info(getYiZhuContent(yiZhuInfo.getZuhao()));
+//				//获取操作历史 
+//				getYiZhuStateRecord(yiZhuInfo);
+//				//获取配前核对历史
+//				if (current_application.yizhu_peiye_hedui_type.contains(yiZhuInfo.getYongfa_type())){
+//					yiZhuInfo.setYizhu_hedui_history(getPeiQianHeDuiHistory(yiZhuInfo.getZuhao()));
+//				}
+//				//查询该医嘱的所有操作历史
+//				yiZhuInfo.setYizhu_qita_history(getZhiXingDetailed(yiZhuInfo.getZuhao()));
 				
 				list.add(yiZhuInfo);
 			}
@@ -560,16 +569,17 @@ public abstract class YiZhuStatusBasic {
 			}
 		}
 		
-		//获取医嘱内容
-		yiZhuInfo.setYizhu_content_info(getYiZhuContent(yiZhuInfo.getZuhao()));
-		//获取操作历史 
+		//TODO 此操作在对象生成以后执行
+//		//获取医嘱内容
+//		yiZhuInfo.setYizhu_content_info(getYiZhuContent(yiZhuInfo.getZuhao()));
+//		//获取操作历史 
 //		getYiZhuStateRecord(yiZhuInfo);
-		//获取配前核对历史
-		if (current_application.yizhu_peiye_hedui_type.contains(yiZhuInfo.getYongfa_type())){
-			yiZhuInfo.setYizhu_hedui_history(getPeiQianHeDuiHistory(yiZhuInfo.getZuhao()));
-		}
-		//查询该医嘱的所有操作历史
-		yiZhuInfo.setYizhu_qita_history(getZhiXingDetailed(yiZhuInfo.getZuhao()));
+//		//获取配前核对历史
+//		if (current_application.yizhu_peiye_hedui_type.contains(yiZhuInfo.getYongfa_type())){
+//			yiZhuInfo.setYizhu_hedui_history(getPeiQianHeDuiHistory(yiZhuInfo.getZuhao()));
+//		}
+//		//查询该医嘱的所有操作历史
+//		yiZhuInfo.setYizhu_qita_history(getZhiXingDetailed(yiZhuInfo.getZuhao()));
 		
 		return yiZhuInfo;
 	}
@@ -581,20 +591,31 @@ public abstract class YiZhuStatusBasic {
 	 */
 	public void yiZhuDialog(YiZhuInfo yiZhuInfo, int insert_type){
 //		YiZhuInfo yiZhuInfo = checkYiZhu(zuhao);
-		if (yiZhuInfo.getZhixing_state().equals(YiZhuManage.status_yiJiaoDui)){
+//		if (yiZhuInfo.getZhixing_state().equals(YiZhuManage.status_yiJiaoDui)){
 //			AlertDialogTools.contentDialogTwo(context, this, yiZhuInfo, insert_type, "开始执行", "取消");
-			return;
-		}
-		if (yiZhuInfo.getZhixing_state().equals(YiZhuManage.status_kaiShi)){
+//			return;
+//		}
+//		if (yiZhuInfo.getZhixing_state().equals(YiZhuManage.status_kaiShi)){
 //			AlertDialogTools.contentDialogThree(context, this, yiZhuInfo, insert_type, "执行完毕", "其他操作", "取消");
-			return;
-		}
-		if (yiZhuInfo.getZhixing_state().equals(YiZhuManage.status_zanTing)){
+//			return;
+//		}
+//		if (yiZhuInfo.getZhixing_state().equals(YiZhuManage.status_zanTing)){
 //			AlertDialogTools.contentDialogThree(context, this, yiZhuInfo, insert_type, "执行完毕", "开始执行", "取消");
-			return;
-		}
+//			return;
+//		}
 	}
-	  
-	  
+	
+	public void yiZhuOpreationHistory(YiZhuInfo yiZhuInfo){
+		//获取医嘱内容
+		yiZhuInfo.setYizhu_content_info(getYiZhuContent(yiZhuInfo.getZuhao()));
+		//获取操作历史 
+		getYiZhuStateRecord(yiZhuInfo);
+		//获取配前核对历史
+		if (current_application.yizhu_peiye_hedui_type.contains(yiZhuInfo.getYongfa_type())){
+			yiZhuInfo.setYizhu_hedui_history(getPeiQianHeDuiHistory(yiZhuInfo.getZuhao()));
+		}
+		//查询该医嘱的所有操作历史
+		yiZhuInfo.setYizhu_qita_history(getZhiXingDetailed(yiZhuInfo.getZuhao()));
+	}
 	  
 }
