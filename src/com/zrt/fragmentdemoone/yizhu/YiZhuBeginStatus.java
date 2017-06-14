@@ -20,7 +20,6 @@ public class YiZhuBeginStatus extends YiZhuStatusBasic implements DialogExecute{
 	public final String dangqian_zhixing_state = "执行完毕";
 	public final String zanting_zhixing = "暂停执行";
 	public final String other_operation = "其他操作";
-	public final String cancel = "取消";
 	public String yongfa_type = "全部";
 	public YiZhuBeginStatus(String yizhu_type) {
 		this.yongfa_type = yizhu_type;
@@ -52,6 +51,16 @@ public class YiZhuBeginStatus extends YiZhuStatusBasic implements DialogExecute{
 		// TODO Auto-generated method stub
 		Log.i(">>>>", "##"+object.toString()+"="+this.getClass().getName());
 		YiZhuInfo yiZhuInfo = (YiZhuInfo) object;
+		AlertDialogTools.contentDialogThree(context, this, yiZhuInfo, insert_type, dangqian_zhixing_state, other_operation, cancel);
+	}
+	
+	@Override
+	public void scanYiZhuExecute(YiZhuInfo yiZhuInfo, int insert_type) {
+		// TODO 扫描医嘱执行
+		if (null != AlertDialogTools.alertDialog && AlertDialogTools.alertDialog.isShowing()){
+			yiZhuCompleteExecute(yiZhuInfo, dangqian_zhixing_state, insert_type);
+			return;
+		}
 		AlertDialogTools.contentDialogThree(context, this, yiZhuInfo, insert_type, dangqian_zhixing_state, other_operation, cancel);
 	}
 

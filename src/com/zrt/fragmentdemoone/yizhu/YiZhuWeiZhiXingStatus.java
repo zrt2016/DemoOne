@@ -78,6 +78,16 @@ public class YiZhuWeiZhiXingStatus extends YiZhuStatusBasic implements DialogExe
 		Log.i(">>>>", "##"+object.toString()+"="+this.getClass().getName());
 		
 	}
+	
+	@Override
+	public void scanYiZhuExecute(YiZhuInfo yiZhuInfo, int insert_type) {
+		// TODO 扫描医嘱执行
+		if (null != AlertDialogTools.alertDialog && AlertDialogTools.alertDialog.isShowing()){
+			executeYiZhu(yiZhuInfo, dangqian_zhixing_state, insert_type);
+			return;
+		}
+		AlertDialogTools.contentDialogTwo(context, this, yiZhuInfo, insert_type, "开始执行", cancel);
+	}
 
 	@Override
 	public void setYiZhuType(String yizhu_type) {
