@@ -19,6 +19,10 @@ public class YiZhuWeiPeiYeStatus extends YiZhuStatusBasic{
 		
 	}
 
+	public YiZhuWeiPeiYeStatus() {
+		// TODO Auto-generated constructor stub
+	}
+
 	@Override
 	public String getSQLiteType(String yizhu_type) {
 		StringBuilder sb = new StringBuilder();
@@ -50,14 +54,16 @@ public class YiZhuWeiPeiYeStatus extends YiZhuStatusBasic{
 		
 		
 	}
-
+	
 	@Override
-	public void setYiZhuType(String yizhu_type, boolean isUpdate) {
-		this.yizhu_type = yizhu_type;
-		// TODO  是否刷新医嘱界面
-		if (isUpdate){
-//			getSQLiteType(yizhu_type);
-		}
+	public void scanYiZhuExecute(YiZhuInfo yiZhuInfo, int insert_type) {
+		// TODO 扫描医嘱执行
+		
+	}
+	
+	@Override
+	public void setYiZhuType(String yizhu_type) {
+		this.yongfa_type = yizhu_type;
 	}
 
 	@Override
