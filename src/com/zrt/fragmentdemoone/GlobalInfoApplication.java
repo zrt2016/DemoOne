@@ -23,6 +23,7 @@ public class GlobalInfoApplication extends Application{
 	
 //	public String DUODAI_SHUYE_ZHUSHE_TIPS = "";
 	public boolean yizhu_duodai_shuye_tixing = true;
+	public boolean netWork = false;
 	
 	@Override
 	public void onCreate() {
