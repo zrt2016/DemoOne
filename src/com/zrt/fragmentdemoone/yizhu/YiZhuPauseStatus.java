@@ -3,6 +3,9 @@ package com.zrt.fragmentdemoone.yizhu;
 import java.util.List;
 import java.util.UUID;
 
+import com.zrt.fragmentdemoone.yizhu.tools.AlertDialogTools;
+import com.zrt.fragmentdemoone.yizhu.tools.DialogExecute;
+
 import android.database.Cursor;
 import android.util.Log;
 
@@ -11,7 +14,7 @@ import android.util.Log;
  * @author zrt
  *
  */
-public class YiZhuPauseStatus extends YiZhuStatusBasic{
+public class YiZhuPauseStatus extends YiZhuStatusBasic implements DialogExecute{
 	public final String zhixing_state_completed = "执行完毕";
 	public final String zhixing_state_begin = "开始执行";
 
@@ -45,14 +48,21 @@ public class YiZhuPauseStatus extends YiZhuStatusBasic{
 		// TODO Auto-generated method stub
 		Log.i(">>>>", "##"+object.toString()+"="+this.getClass().getName());
 	}
+	
+	@Override
+	public void scanYiZhuExecute(YiZhuInfo yiZhuInfo, int insert_type) {
+		// TODO 扫描医嘱执行
+		if (null != AlertDialogTools.alertDialog && AlertDialogTools.alertDialog.isShowing()){
+			executeYiZhu(yiZhuInfo, zhixing_state_completed, insert_type);
+			return;
+		}
+		AlertDialogTools.contentDialogThree(context, this, yiZhuInfo, insert_type, zhixing_state_completed, zhixing_state_begin, cancel);
+		
+	}
 
 	@Override
-	public void setYiZhuType(String yizhu_type, boolean isUpdate) {
-		this.yizhu_type = yizhu_type;
-		// TODO  是否刷新医嘱界面
-		if (isUpdate){
-			
-		}
+	public void setYiZhuType(String yizhu_type) {
+		this.yongfa_type = yizhu_type;
 	}
 
 	@Override
@@ -102,36 +112,79 @@ public class YiZhuPauseStatus extends YiZhuStatusBasic{
 		yiZhuInfo.setJiaodui_history(jiaodui_lishi_new.toString());
 		yiZhuInfo.setKaishi_history(kaishi_lishi_new.toString());
 	}
-	
-	/**
-	 * 开始执行
-	 * @param yiZhuInfo 
-	 * @param insert_type
-	 */
-	private void yiZhuBeginExecute(YiZhuInfo yiZhuInfo, int insert_type) {
+
+	@Override
+	public void executeYiZhu(YiZhuInfo yiZhuInfo, String state, int insert_type) {
 		// TODO Auto-generated method stub
-		String history_id = UUID.randomUUID().toString();
-		int dangqian_cishu = getDangqianWanchengCishu(yiZhuInfo.getWancheng_cishu(), yiZhuInfo.getMeiri_cishu(), "");
-		int hedui_cishu = getCalcHeduiCishu(yiZhuInfo.getZuhao(), zhixing_state_begin, dangqian_cishu);
-		String other_info = mapScan.get(yiZhuInfo.getZuhao());
-		executeDB(getUpdateBeginSQLite(yiZhuInfo, zhixing_state_begin));
-		executeDB(getInsertHistorySQLite(yiZhuInfo, zhixing_state_begin, zhixing_state_begin, history_id, dangqian_cishu, hedui_cishu, other_info, insert_type, ""));
-		executeDB(getInsertHistoryLiShiSQLite(yiZhuInfo, zhixing_state_begin, zhixing_state_begin, history_id, dangqian_cishu, hedui_cishu, other_info, insert_type, ""));
+		if (state.equals(zhixing_state_begin)){
+			yiZhuBeginExecute(yiZhuInfo, zhixing_state_begin, insert_type);
+			return;
+		}
+		if (state.equals(zhixing_state_completed)){
+			yiZhuCompleteExecute(yiZhuInfo, zhixing_state_completed, insert_type);
+		}
+		
+	}
+
+	@Override
+	public void otherOperation(YiZhuInfo yiZhuInfo, String state, int insert_type) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void cancel(String state) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void executeOtherOperation(YiZhuInfo yiZhuInfo, String op_type, int insert_type) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void executeInputOtherValue(YiZhuInfo yiZhuInfo, String op_type, int insert_type, String beizhu) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean executeExistsStartYiZhu(List<YiZhuInfo> zhiXingList, int insert_type) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
-	/**
-	 * 执行完毕
-	 * @param yiZhuInfo
-	 * @param insert_type
-	 */
-	private void yiZhuCompleteExecute(YiZhuInfo yiZhuInfo, int insert_type) {
-		String other_info = "";
-		int dangqian_cishu = getDangqianWanchengCishu(yiZhuInfo.getWancheng_cishu(), yiZhuInfo.getMeiri_cishu(), "");
-		int hedui_cishu = getCalcHeduiCishu(yiZhuInfo.getZuhao(), zhixing_state_completed, dangqian_cishu);
-		String history_id = UUID.randomUUID().toString();
-		executeDB(getUpdateCompletedSQLite(yiZhuInfo));
-		executeDB(getInsertHistorySQLite(yiZhuInfo, zhixing_state_completed, zhixing_state_completed, history_id, dangqian_cishu, hedui_cishu, other_info, insert_type, ""));
-		executeDB(getInsertHistoryLiShiSQLite(yiZhuInfo, zhixing_state_completed, zhixing_state_completed, history_id, dangqian_cishu, hedui_cishu, other_info, insert_type, ""));
-	}
+//	/**
+//	 * 开始执行
+//	 * @param yiZhuInfo 
+//	 * @param insert_type
+//	 */
+//	private void yiZhuBeginExecute(YiZhuInfo yiZhuInfo, int insert_type) {
+//		// TODO Auto-generated method stub
+//		String history_id = UUID.randomUUID().toString();
+//		int dangqian_cishu = getDangqianWanchengCishu(yiZhuInfo.getWancheng_cishu(), yiZhuInfo.getMeiri_cishu(), "");
+//		int hedui_cishu = getCalcHeduiCishu(yiZhuInfo.getZuhao(), zhixing_state_begin, dangqian_cishu);
+//		String other_info = mapScan.get(yiZhuInfo.getZuhao());
+//		executeDB(getUpdateBeginSQLite(yiZhuInfo, zhixing_state_begin));
+//		executeDB(getInsertHistorySQLite(yiZhuInfo, zhixing_state_begin, zhixing_state_begin, history_id, dangqian_cishu, hedui_cishu, other_info, insert_type, ""));
+//		executeDB(getInsertHistoryLiShiSQLite(yiZhuInfo, zhixing_state_begin, zhixing_state_begin, history_id, dangqian_cishu, hedui_cishu, other_info, insert_type, ""));
+//	}
+	
+//	/**
+//	 * 执行完毕
+//	 * @param yiZhuInfo
+//	 * @param insert_type
+//	 */
+//	private void yiZhuCompleteExecute(YiZhuInfo yiZhuInfo, int insert_type) {
+//		String other_info = "";
+//		int dangqian_cishu = getDangqianWanchengCishu(yiZhuInfo.getWancheng_cishu(), yiZhuInfo.getMeiri_cishu(), "");
+//		int hedui_cishu = getCalcHeduiCishu(yiZhuInfo.getZuhao(), zhixing_state_completed, dangqian_cishu);
+//		String history_id = UUID.randomUUID().toString();
+//		executeDB(getUpdateCompletedSQLite(yiZhuInfo));
+//		executeDB(getInsertHistorySQLite(yiZhuInfo, zhixing_state_completed, zhixing_state_completed, history_id, dangqian_cishu, hedui_cishu, other_info, insert_type, ""));
+//		executeDB(getInsertHistoryLiShiSQLite(yiZhuInfo, zhixing_state_completed, zhixing_state_completed, history_id, dangqian_cishu, hedui_cishu, other_info, insert_type, ""));
+//	}
 	
 }

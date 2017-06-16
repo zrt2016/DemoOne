@@ -215,21 +215,30 @@ public class YiZhuWeiZhiXingStatus extends YiZhuStatusBasic implements DialogExe
 	 */
 	private boolean yiZhuDuoDaiFinish(List<YiZhuInfo> zhiXingList, int insert_type){
 		boolean state = true;
+		List<YiZhuInfo> selectList = new ArrayList<YiZhuInfo>();
 		for (int x=0; x<zhiXingList.size(); x++){
 			YiZhuInfo yiZhuInfo = zhiXingList.get(x);
 			if (yiZhuInfo.isOperation_state()){
 				state = false;
-				int dangqian_cishu = getDangqianWanchengCishu(yiZhuInfo.getWancheng_cishu(), yiZhuInfo.getMeiri_cishu(), "");
-				int hedui_cishu = getCalcHeduiCishu(yiZhuInfo.getZuhao(), dangqian_zhixing_state, dangqian_cishu);
-				String history_id = UUID.randomUUID().toString();
-				executeDB(getUpdateCompletedSQLite(yiZhuInfo));
-				executeDB(getInsertHistorySQLite(yiZhuInfo, dangqian_zhixing_state, dangqian_zhixing_state, history_id, dangqian_cishu, hedui_cishu, "", insert_type, ""));
-				executeDB(getInsertHistoryLiShiSQLite(yiZhuInfo, dangqian_zhixing_state, dangqian_zhixing_state, history_id, dangqian_cishu, hedui_cishu, "", insert_type, ""));
+				if (current_application.netWork){
+					selectList.add(yiZhuInfo);
+					continue;
+				}
+				yiZhuCompleteExecute(yiZhuInfo, zhiXing_over, insert_type);
+//				int dangqian_cishu = getDangqianWanchengCishu(yiZhuInfo.getWancheng_cishu(), yiZhuInfo.getMeiri_cishu(), "");
+//				int hedui_cishu = getCalcHeduiCishu(yiZhuInfo.getZuhao(), dangqian_zhixing_state, dangqian_cishu);
+//				String history_id = UUID.randomUUID().toString();
+//				executeDB(getUpdateCompletedSQLite(yiZhuInfo));
+//				executeDB(getInsertHistorySQLite(yiZhuInfo, dangqian_zhixing_state, dangqian_zhixing_state, history_id, dangqian_cishu, hedui_cishu, "", insert_type, ""));
+//				executeDB(getInsertHistoryLiShiSQLite(yiZhuInfo, dangqian_zhixing_state, dangqian_zhixing_state, history_id, dangqian_cishu, hedui_cishu, "", insert_type, ""));
 			}
 		}
 		if (state) {
 			Toast.makeText(context, "请至少选择一条正在执行的医嘱", Toast.LENGTH_SHORT).show();
 			return false;
+		}
+		if (current_application.netWork){
+			 
 		}
 		return true;
 	}
