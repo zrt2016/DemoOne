@@ -55,14 +55,16 @@ public class YiZhuCompletedStatus extends YiZhuStatusBasic{
 		// TODO Auto-generated method stub
 		Log.i(">>>>", "##"+object.toString()+"="+this.getClass().getName());
 	}
-
+	
 	@Override
-	public void setYiZhuType(String yizhu_type, boolean isUpdate) {
-		this.yizhu_type = yizhu_type;
-		// TODO  是否刷新医嘱界面
-		if (isUpdate){
-			
-		}
+	public void scanYiZhuExecute(YiZhuInfo yiZhuInfo, int insert_type) {
+		// TODO 扫描医嘱执行
+		
+	}
+	
+	@Override
+	public void setYiZhuType(String yizhu_type) {
+		this.yongfa_type = yizhu_type;
 	}
 
 
